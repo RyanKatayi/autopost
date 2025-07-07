@@ -5,7 +5,8 @@ import { useRouter } from 'next/navigation'
 import { useDashboard } from '@/hooks/useDashboard'
 import { useEffect } from 'react'
 import { Button } from '@/components/ui/button'
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { StatCard } from '@/components/ui/stat-card';
 import { DashboardSidebar } from '@/components/dashboard-sidebar'
 
 
@@ -16,7 +17,7 @@ export default function Dashboard() {
 
   useEffect(() => {
     if (!user) {
-      router.push('/login')
+      router.push('/')
     }
   }, [user, router])
 
@@ -42,7 +43,7 @@ export default function Dashboard() {
 
   if (error) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50 flex items-center justify-center">
+      <div className="min-h-screen bg-gradient-to-br from-slate-50 to-green-50 flex items-center justify-center">
         <div className="text-center space-y-6 max-w-md mx-auto p-8">
           <div className="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto">
             <svg className="w-8 h-8 text-red-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -53,7 +54,7 @@ export default function Dashboard() {
             <h3 className="text-xl font-bold text-slate-900">Oops! Something went wrong</h3>
             <p className="text-slate-600">Error loading dashboard: {error}</p>
           </div>
-          <Button onClick={refetch} className="bg-blue-600 hover:bg-blue-700 text-white">
+          <Button onClick={refetch} className="bg-green-600 hover:bg-green-700 text-white">
             <svg className="w-4 h-4 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
             </svg>
@@ -65,186 +66,138 @@ export default function Dashboard() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50">
-      <div className="flex">
+    <div className="min-h-screen bg-background">
+      <div className="flex flex-col lg:flex-row">
         {/* Sidebar */}
-        <DashboardSidebar />
+        <div className="lg:flex-shrink-0">
+          <DashboardSidebar />
+        </div>
 
         {/* Main Content */}
-        <div className="flex-1 flex flex-col">
+        <div className="flex-1 flex flex-col min-w-0">
           {/* Top Navigation */}
-          <header className="bg-white/80 backdrop-blur-sm shadow-sm border-b border-slate-200/60">
-            <div className="px-8 py-6 flex items-center justify-between">
-              <div className="flex items-center space-x-4">
-                <div className="p-2 bg-blue-50 rounded-lg">
-                  <svg className="h-6 w-6 text-blue-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <header className="bg-card/80 backdrop-blur-sm border-b border-white/10">
+            <div className="px-4 sm:px-6 lg:px-8 py-4 sm:py-6 flex items-center justify-between">
+              <div className="flex items-center space-x-3 sm:space-x-4 min-w-0 flex-1">
+                <div className="p-2 bg-green-100 rounded-lg flex-shrink-0">
+                  <svg className="h-5 w-5 sm:h-6 sm:w-6 text-green-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
                   </svg>
                 </div>
-                <div>
+                <div className="min-w-0 flex-1">
                   <div className="flex items-center space-x-2">
-                    <h1 className="text-2xl font-bold text-slate-900">Dashboard</h1>
+                    <h1 className="text-xl sm:text-2xl font-bold text-foreground truncate">Dashboard</h1>
                     {loading && (
-                      <div className="h-2 w-2 bg-blue-400 rounded-full animate-pulse"></div>
+                      <div className="h-2 w-2 bg-primary rounded-full animate-pulse flex-shrink-0"></div>
                     )}
                   </div>
-                  <p className="text-sm text-slate-500">Welcome back! Here&apos;s your social media overview</p>
+                  <p className="text-xs sm:text-sm text-muted-foreground hidden sm:block">Welcome back! Here&apos;s your social media overview</p>
                 </div>
               </div>
               
-              <div className="flex items-center space-x-3">
+              <div className="flex items-center space-x-2 sm:space-x-3 flex-shrink-0">
                 <Button
                   onClick={handleSignOut}
                   variant="ghost"
                   size="sm"
-                  className="text-slate-600 hover:text-slate-900"
+                  className="text-muted-foreground hover:text-foreground text-xs sm:text-sm px-2 sm:px-3"
                 >
-                  <svg className="h-4 w-4 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <svg className="h-3 w-3 sm:h-4 sm:w-4 sm:mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
                   </svg>
-                  Sign Out
+                  <span className="hidden sm:inline">Sign Out</span>
                 </Button>
               </div>
             </div>
           </header>
 
           {/* Dashboard Content */}
-          <main className="flex-1 p-8 overflow-y-auto">
+          <main className="flex-1 p-4 sm:p-6 lg:p-8 overflow-y-auto">
             <div className="max-w-7xl mx-auto">
-              <div className="mb-8">
-                <div className="flex items-center justify-between">
+              <div className="mb-6 sm:mb-8">
+                <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between space-y-2 sm:space-y-0">
                   <div>
-                    <h2 className="text-3xl font-bold text-slate-900 mb-2">Today&apos;s Overview</h2>
-                    <p className="text-slate-600">Track your social media performance and engagement</p>
+                    <h2 className="text-2xl sm:text-3xl font-bold text-green-600 mb-1 sm:mb-2">Today&apos;s Overview</h2>
+                    <p className="text-sm sm:text-base text-muted-foreground">Track your social media performance and engagement</p>
                   </div>
-                  <div className="flex items-center space-x-2 text-sm text-slate-500">
-                    <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <div className="flex items-center space-x-2 text-xs sm:text-sm text-muted-foreground">
+                    <svg className="h-3 w-3 sm:h-4 sm:w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
                     </svg>
-                    Last updated: {new Date().toLocaleTimeString()}
+                    <span className="hidden sm:inline">Last updated: {new Date().toLocaleTimeString()}</span>
+                    <span className="sm:hidden">{new Date().toLocaleTimeString()}</span>
                   </div>
                 </div>
               </div>
 
               {/* Stats Cards */}
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-10">
-                <Card className="bg-gradient-to-br from-blue-50 to-blue-100 border-blue-200 hover:shadow-lg transition-all duration-200">
-                  <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                    <CardTitle className="text-sm font-medium text-blue-900">Accounts Connected</CardTitle>
-                    <div className="p-2 bg-blue-200 rounded-lg">
-                      <svg className="h-4 w-4 text-blue-700" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
-                      </svg>
-                    </div>
-                  </CardHeader>
-                  <CardContent>
-                    <div className="text-3xl font-bold text-blue-900 mb-1">
-                      {displayData?.linkedinAccounts?.length || 0}
-                    </div>
-                    <p className="text-sm text-blue-700">
-                      LinkedIn accounts
-                    </p>
-                  </CardContent>
-                </Card>
-                
-                <Card className="bg-gradient-to-br from-orange-50 to-orange-100 border-orange-200 hover:shadow-lg transition-all duration-200">
-                  <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                    <CardTitle className="text-sm font-medium text-orange-900">Drafts</CardTitle>
-                    <div className="p-2 bg-orange-200 rounded-lg">
-                      <svg className="h-4 w-4 text-orange-700" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
-                      </svg>
-                    </div>
-                  </CardHeader>
-                  <CardContent>
-                    <div className="text-3xl font-bold text-orange-900 mb-1">
-                      {displayData?.stats.drafts || 0}
-                    </div>
-                    <p className="text-sm text-orange-700">
-                      Ready to publish
-                    </p>
-                  </CardContent>
-                </Card>
-                
-                <Card className="bg-gradient-to-br from-purple-50 to-purple-100 border-purple-200 hover:shadow-lg transition-all duration-200">
-                  <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                    <CardTitle className="text-sm font-medium text-purple-900">Scheduled</CardTitle>
-                    <div className="p-2 bg-purple-200 rounded-lg">
-                      <svg className="h-4 w-4 text-purple-700" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-                      </svg>
-                    </div>
-                  </CardHeader>
-                  <CardContent>
-                    <div className="text-3xl font-bold text-purple-900 mb-1">
-                      {displayData?.stats.scheduled || 0}
-                    </div>
-                    <p className="text-sm text-purple-700">
-                      Posts queued
-                    </p>
-                  </CardContent>
-                </Card>
-                
-                <Card className="bg-gradient-to-br from-green-50 to-green-100 border-green-200 hover:shadow-lg transition-all duration-200">
-                  <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                    <CardTitle className="text-sm font-medium text-green-900">Published</CardTitle>
-                    <div className="p-2 bg-green-200 rounded-lg">
-                      <svg className="h-4 w-4 text-green-700" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-                      </svg>
-                    </div>
-                  </CardHeader>
-                  <CardContent>
-                    <div className="text-3xl font-bold text-green-900 mb-1">
-                      {displayData?.stats.published || 0}
-                    </div>
-                    <p className="text-sm text-green-700">
-                      Live posts
-                    </p>
-                  </CardContent>
-                </Card>
-          </div>
+              <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+                <StatCard
+                  title="Accounts Connected"
+                  value={displayData?.linkedinAccounts?.length || 0}
+                  icon={<svg className="h-4 w-4 text-muted-foreground" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" /></svg>}
+                  description="LinkedIn accounts"
+                />
+                <StatCard
+                  title="Drafts"
+                  value={displayData?.stats.drafts || 0}
+                  icon={<svg className="h-4 w-4 text-muted-foreground" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" /></svg>}
+                  description="Ready to publish"
+                />
+                <StatCard
+                  title="Scheduled"
+                  value={displayData?.stats.scheduled || 0}
+                  icon={<svg className="h-4 w-4 text-muted-foreground" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>}
+                  description="Posts queued"
+                />
+                <StatCard
+                  title="Published"
+                  value={displayData?.stats.published || 0}
+                  icon={<svg className="h-4 w-4 text-muted-foreground" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>}
+                  description="Live posts"
+                />
+              </div>
 
               {/* Analytics Summary - Only show if real analytics data exists */}
               {displayData?.analytics?.length > 0 && (
                 <div className="mb-10">
-                  <Card className="bg-white/60 backdrop-blur-sm border-slate-200 shadow-xl">
+                  <Card className="bg-card border shadow-xl">
                     <CardHeader>
                       <div className="flex items-center space-x-3">
-                        <div className="p-2 bg-indigo-100 rounded-lg">
-                          <svg className="h-5 w-5 text-indigo-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <div className="p-2 bg-green-100 rounded-lg">
+                          <svg className="h-5 w-5 text-green-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
                           </svg>
                         </div>
-                        <CardTitle className="text-xl font-bold text-slate-900">Recent Analytics</CardTitle>
+                        <CardTitle className="text-xl font-bold text-foreground">Recent Analytics</CardTitle>
                       </div>
                     </CardHeader>
                     <CardContent>
                       <div className="space-y-4">
                         {displayData.analytics.map((analytic) => (
-                          <div key={analytic.id} className="flex items-center justify-between p-4 bg-gradient-to-r from-slate-50 to-slate-100 rounded-xl border border-slate-200 hover:shadow-md transition-all duration-200">
+                          <div key={analytic.id} className="flex items-center justify-between p-4 bg-accent/50 rounded-xl border hover:shadow-md transition-all duration-200">
                             <div className="flex-1">
-                              <h4 className="font-semibold text-sm text-slate-900">Post Analytics</h4>
-                              <p className="text-xs text-slate-500 mt-1">
+                              <h4 className="font-semibold text-sm text-foreground">Post Analytics</h4>
+                              <p className="text-xs text-muted-foreground mt-1">
                                 {new Date(analytic.recorded_at).toLocaleDateString()}
                               </p>
                             </div>
                             <div className="flex items-center space-x-8 text-sm">
                               <div className="text-center">
-                                <div className="font-bold text-lg text-blue-600">{analytic.impressions?.toLocaleString() || 0}</div>
-                                <div className="text-xs text-slate-500">Impressions</div>
+                                <div className="font-bold text-lg text-green-600">{analytic.impressions?.toLocaleString() || 0}</div>
+                                <div className="text-xs text-muted-foreground">Impressions</div>
                               </div>
                               <div className="text-center">
                                 <div className="font-bold text-lg text-green-600">{analytic.clicks?.toLocaleString() || 0}</div>
-                                <div className="text-xs text-slate-500">Clicks</div>
+                                <div className="text-xs text-muted-foreground">Clicks</div>
                               </div>
                               <div className="text-center">
-                                <div className="font-bold text-lg text-red-600">{analytic.likes || 0}</div>
-                                <div className="text-xs text-slate-500">Likes</div>
+                                <div className="font-bold text-lg text-destructive">{analytic.likes || 0}</div>
+                                <div className="text-xs text-muted-foreground">Likes</div>
                               </div>
                               <div className="text-center">
-                                <div className="font-bold text-lg text-purple-600">{analytic.engagement_rate || 0}%</div>
-                                <div className="text-xs text-slate-500">Engagement</div>
+                                <div className="font-bold text-lg text-green-600">{analytic.engagement_rate || 0}%</div>
+                                <div className="text-xs text-muted-foreground">Engagement</div>
                               </div>
                             </div>
                           </div>
@@ -256,39 +209,39 @@ export default function Dashboard() {
               )}
 
               {/* Content Area */}
-              <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+              <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 lg:gap-8">
             {/* Main Content */}
             <div className="lg:col-span-2">
               <Card>
-                <CardHeader>
-                  <div className="flex items-center justify-between">
-                    <CardTitle className="text-lg font-semibold">Post Activity</CardTitle>
+                <CardHeader className="p-4 sm:p-6">
+                  <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between space-y-2 sm:space-y-0">
+                    <CardTitle className="text-base sm:text-lg font-semibold">Post Activity</CardTitle>
                     <div className="flex items-center space-x-2">
-                      <Button variant="ghost" size="sm">All Time</Button>
+                      <Button variant="ghost" size="sm" className="text-xs sm:text-sm">All Time</Button>
                     </div>
                   </div>
                 </CardHeader>
-                <CardContent>
-                  <div className="space-y-4">
-                    <div className="grid grid-cols-2 gap-4">
-                      <div className="flex items-center justify-between p-3 bg-red-50 rounded-lg">
+                <CardContent className="p-4 sm:p-6">
+                  <div className="space-y-3 sm:space-y-4">
+                    <div className="grid grid-cols-2 gap-3 sm:gap-4">
+                      <div className="flex items-center justify-between p-3 bg-destructive/10 rounded-lg">
                         <div>
-                          <div className="text-2xl font-bold text-red-600">{displayData?.stats.failed || 0}</div>
-                          <span className="text-sm text-red-600">Failed</span>
+                          <div className="text-2xl font-bold text-destructive">{displayData?.stats.failed || 0}</div>
+                          <span className="text-sm text-destructive">Failed</span>
                         </div>
-                        <div className="text-red-400">
+                        <div className="text-destructive/50">
                           <svg className="w-8 h-8" fill="currentColor" viewBox="0 0 20 20">
                             <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd" />
                           </svg>
                         </div>
                       </div>
                       
-                      <div className="flex items-center justify-between p-3 bg-orange-50 rounded-lg">
+                      <div className="flex items-center justify-between p-3 bg-green-100 rounded-lg">
                         <div>
-                          <div className="text-2xl font-bold text-orange-600">{displayData?.stats.drafts || 0}</div>
-                          <span className="text-sm text-orange-600">Drafts</span>
+                          <div className="text-2xl font-bold text-green-600">{displayData?.stats.drafts || 0}</div>
+                          <span className="text-sm text-green-600">Drafts</span>
                         </div>
-                        <div className="text-orange-400">
+                        <div className="text-green-600/50">
                           <svg className="w-8 h-8" fill="currentColor" viewBox="0 0 20 20">
                             <path d="M17.414 2.586a2 2 0 00-2.828 0L7 10.172V13h2.828l7.586-7.586a2 2 0 000-2.828z" />
                             <path fillRule="evenodd" d="M2 6a2 2 0 012-2h4a1 1 0 010 2H4v10h10v-4a1 1 0 112 0v4a2 2 0 01-2 2H4a2 2 0 01-2-2V6z" clipRule="evenodd" />
@@ -296,24 +249,24 @@ export default function Dashboard() {
                         </div>
                       </div>
                       
-                      <div className="flex items-center justify-between p-3 bg-purple-50 rounded-lg">
+                      <div className="flex items-center justify-between p-3 bg-green-100 rounded-lg">
                         <div>
-                          <div className="text-2xl font-bold text-purple-600">{displayData?.stats.scheduled || 0}</div>
-                          <span className="text-sm text-purple-600">Scheduled</span>
+                          <div className="text-2xl font-bold text-green-600">{displayData?.stats.scheduled || 0}</div>
+                          <span className="text-sm text-green-600">Scheduled</span>
                         </div>
-                        <div className="text-purple-400">
+                        <div className="text-green-600/50">
                           <svg className="w-8 h-8" fill="currentColor" viewBox="0 0 20 20">
                             <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z" clipRule="evenodd" />
                           </svg>
                         </div>
                       </div>
                       
-                      <div className="flex items-center justify-between p-3 bg-green-50 rounded-lg">
+                      <div className="flex items-center justify-between p-3 bg-green-100 rounded-lg">
                         <div>
                           <div className="text-2xl font-bold text-green-600">{displayData?.stats.published || 0}</div>
                           <span className="text-sm text-green-600">Published</span>
                         </div>
-                        <div className="text-green-400">
+                        <div className="text-green-600/50">
                           <svg className="w-8 h-8" fill="currentColor" viewBox="0 0 20 20">
                             <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
                           </svg>
@@ -333,49 +286,49 @@ export default function Dashboard() {
             </div>
 
             {/* Sidebar */}
-            <div className="space-y-6">
-                  <Card className="bg-white/60 backdrop-blur-sm border-slate-200 shadow-lg">
-                    <CardHeader>
+            <div className="space-y-4 sm:space-y-6">
+                  <Card className="bg-card border shadow-lg">
+                    <CardHeader className="p-4 sm:p-6">
                       <div className="flex items-center space-x-3">
-                        <div className="p-2 bg-amber-100 rounded-lg">
-                          <svg className="h-4 w-4 text-amber-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <div className="p-1.5 sm:p-2 bg-green-100 rounded-lg flex-shrink-0">
+                          <svg className="h-3 w-3 sm:h-4 sm:w-4 text-green-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 17h5l-5 5-5-5h5v-5z" />
                           </svg>
                         </div>
-                        <CardTitle className="text-lg font-semibold text-slate-900">Notifications</CardTitle>
+                        <CardTitle className="text-base sm:text-lg font-semibold text-foreground">Accounts</CardTitle>
                       </div>
                     </CardHeader>
                     <CardContent>
                       <div className="space-y-4">
                         {displayData?.linkedinAccounts?.length > 0 ? (
                           <>
-                            <div className="flex items-start space-x-3 p-3 bg-green-50 rounded-lg border border-green-200">
-                              <div className="w-3 h-3 bg-green-500 rounded-full mt-1.5"></div>
+                            <div className="flex items-start space-x-3 p-3 bg-green-100 rounded-lg border">
+                              <div className="w-3 h-3 bg-primary rounded-full mt-1.5"></div>
                               <div>
-                                <p className="text-sm font-medium text-green-900">
+                                <p className="text-sm font-medium text-green-600">
                                   {displayData.linkedinAccounts.length} LinkedIn account{displayData.linkedinAccounts.length > 1 ? 's' : ''} connected
                                 </p>
-                                <p className="text-xs text-green-700 mt-1">Ready to publish content</p>
+                                <p className="text-xs text-green-600/80 mt-1">Ready to publish content</p>
                               </div>
                             </div>
                             {displayData.stats.scheduled > 0 && (
-                              <div className="flex items-start space-x-3 p-3 bg-blue-50 rounded-lg border border-blue-200">
-                                <div className="w-3 h-3 bg-blue-500 rounded-full mt-1.5"></div>
+                              <div className="flex items-start space-x-3 p-3 bg-green-100 rounded-lg border">
+                                <div className="w-3 h-3 bg-primary rounded-full mt-1.5"></div>
                                 <div>
-                                  <p className="text-sm font-medium text-blue-900">
+                                  <p className="text-sm font-medium text-green-600">
                                     {displayData.stats.scheduled} post{displayData.stats.scheduled > 1 ? 's' : ''} scheduled
                                   </p>
-                                  <p className="text-xs text-blue-700 mt-1">Automated publishing active</p>
+                                  <p className="text-xs text-green-600/80 mt-1">Automated publishing active</p>
                                 </div>
                               </div>
                             )}
                           </>
                         ) : (
-                          <div className="flex items-start space-x-3 p-3 bg-yellow-50 rounded-lg border border-yellow-200">
-                            <div className="w-3 h-3 bg-yellow-500 rounded-full mt-1.5"></div>
+                          <div className="flex items-start space-x-3 p-3 bg-destructive/10 rounded-lg border">
+                            <div className="w-3 h-3 bg-destructive rounded-full mt-1.5"></div>
                             <div>
-                              <p className="text-sm font-medium text-yellow-900">No LinkedIn accounts connected</p>
-                              <p className="text-xs text-yellow-700 mt-1">Connect an account to start posting</p>
+                              <p className="text-sm font-medium text-destructive">No LinkedIn accounts connected</p>
+                              <p className="text-xs text-destructive/80 mt-1">Connect an account to start posting</p>
                             </div>
                           </div>
                         )}
@@ -383,47 +336,47 @@ export default function Dashboard() {
                     </CardContent>
                   </Card>
                   
-                  <Card className="bg-white/60 backdrop-blur-sm border-slate-200 shadow-lg">
+                  <Card className="bg-card border shadow-lg">
                     <CardHeader>
                       <div className="flex items-center space-x-3">
-                        <div className="p-2 bg-violet-100 rounded-lg">
-                          <svg className="h-4 w-4 text-violet-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <div className="p-2 bg-green-100 rounded-lg">
+                          <svg className="h-4 w-4 text-green-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
                           </svg>
                         </div>
-                        <CardTitle className="text-lg font-semibold text-slate-900">Recent Activities</CardTitle>
+                        <CardTitle className="text-lg font-semibold text-foreground">Recent Activities</CardTitle>
                       </div>
                     </CardHeader>
                     <CardContent>
                       <div className="space-y-4">
                         {displayData?.recentPosts?.length > 0 ? (
                           displayData.recentPosts.slice(0, 3).map((post) => (
-                            <div key={post.id} className="flex items-start space-x-3 p-3 bg-slate-50 rounded-lg border border-slate-200 hover:shadow-sm transition-all duration-200">
+                            <div key={post.id} className="flex items-start space-x-3 p-3 bg-accent/50 rounded-lg border hover:shadow-sm transition-all duration-200">
                               <div className={`w-10 h-10 rounded-full flex items-center justify-center text-sm font-semibold ${
-                                post.status === 'published' ? 'bg-green-100 text-green-700' :
-                                post.status === 'scheduled' ? 'bg-purple-100 text-purple-700' :
-                                'bg-orange-100 text-orange-700'
+                                post.status === 'published' ? 'bg-green-100 text-green-600' :
+                                post.status === 'scheduled' ? 'bg-green-100 text-green-600' :
+                                'bg-destructive/10 text-destructive'
                               }`}>
                                 {post.status === 'published' ? 'P' : post.status === 'scheduled' ? 'S' : 'D'}
                               </div>
                               <div className="flex-1 min-w-0">
-                                <p className="text-sm font-medium text-slate-900 truncate">
+                                <p className="text-sm font-medium text-foreground truncate">
                                   {post.status === 'published' ? 'Published' : post.status === 'scheduled' ? 'Scheduled' : 'Draft'}: {post.title?.slice(0, 25) || 'Untitled'}...
                                 </p>
-                                <p className="text-xs text-slate-500 mt-1">{new Date(post.created_at).toLocaleDateString()}</p>
+                                <p className="text-xs text-muted-foreground mt-1">{new Date(post.created_at).toLocaleDateString()}</p>
                               </div>
                             </div>
                           ))
                         ) : (
-                          <div className="flex items-start space-x-3 p-3 bg-slate-50 rounded-lg border border-slate-200">
-                            <div className="w-10 h-10 bg-slate-200 rounded-full flex items-center justify-center">
-                              <svg className="h-5 w-5 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                          <div className="flex items-start space-x-3 p-3 bg-accent/50 rounded-lg border">
+                            <div className="w-10 h-10 bg-accent rounded-full flex items-center justify-center">
+                              <svg className="h-5 w-5 text-muted-foreground" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
                               </svg>
                             </div>
                             <div>
-                              <p className="text-sm text-slate-600">No recent posts</p>
-                              <p className="text-xs text-slate-400 mt-1">Create your first post to get started</p>
+                              <p className="text-sm text-muted-foreground">No recent posts</p>
+                              <p className="text-xs text-muted-foreground mt-1">Create your first post to get started</p>
                             </div>
                           </div>
                         )}

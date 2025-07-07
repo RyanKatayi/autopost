@@ -76,7 +76,7 @@ export function LinkedInAccountSelector({
         <Card>
           <CardContent className="p-4">
             <div className="flex items-center space-x-2">
-              <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-blue-600"></div>
+              <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-green-600"></div>
               <span className="text-sm text-gray-600">Loading LinkedIn accounts...</span>
             </div>
           </CardContent>
@@ -130,8 +130,8 @@ export function LinkedInAccountSelector({
                         className="w-5 h-5 rounded-full"
                       />
                     ) : (
-                      <div className="w-5 h-5 rounded-full bg-blue-100 flex items-center justify-center">
-                        <svg className="w-3 h-3 text-blue-600" fill="currentColor" viewBox="0 0 20 20">
+                      <div className="w-5 h-5 rounded-full bg-green-100 flex items-center justify-center">
+                        <svg className="w-3 h-3 text-green-600" fill="currentColor" viewBox="0 0 20 20">
                           <path d="M16.5 6v11.5c0 .5-.5 1-1 1h-3v-6.5c0-.5-.5-1-1-1s-1 .5-1 1v6.5h-3c-.5 0-1-.5-1-1V6c0-.5.5-1 1-1h3v1.5c.5-.5 1.5-1.5 3-1.5s2.5 1 2.5 2.5z"/>
                         </svg>
                       </div>
@@ -139,7 +139,7 @@ export function LinkedInAccountSelector({
                     <span className="text-sm">
                       {selectedAccount.display_name || 'LinkedIn User'}
                       {selectedAccount.is_primary && (
-                        <span className="text-xs text-blue-600 ml-1">(Primary)</span>
+                        <span className="text-xs text-green-600 ml-1">(Primary)</span>
                       )}
                     </span>
                   </div>
@@ -159,8 +159,8 @@ export function LinkedInAccountSelector({
                         className="w-5 h-5 rounded-full"
                       />
                     ) : (
-                      <div className="w-5 h-5 rounded-full bg-blue-100 flex items-center justify-center">
-                        <svg className="w-3 h-3 text-blue-600" fill="currentColor" viewBox="0 0 20 20">
+                      <div className="w-5 h-5 rounded-full bg-green-100 flex items-center justify-center">
+                        <svg className="w-3 h-3 text-green-600" fill="currentColor" viewBox="0 0 20 20">
                           <path d="M16.5 6v11.5c0 .5-.5 1-1 1h-3v-6.5c0-.5-.5-1-1-1s-1 .5-1 1v6.5h-3c-.5 0-1-.5-1-1V6c0-.5.5-1 1-1h3v1.5c.5-.5 1.5-1.5 3-1.5s2.5 1 2.5 2.5z"/>
                         </svg>
                       </div>
@@ -169,7 +169,7 @@ export function LinkedInAccountSelector({
                       <div className="text-sm font-medium">
                         {account.display_name || 'LinkedIn User'}
                         {account.is_primary && (
-                          <span className="text-xs text-blue-600 ml-1">(Primary)</span>
+                          <span className="text-xs text-green-600 ml-1">(Primary)</span>
                         )}
                       </div>
                       {account.headline && (

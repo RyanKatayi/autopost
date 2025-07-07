@@ -61,10 +61,18 @@ export function DashboardSidebar() {
   ]
 
   return (
-    <div className="w-64 bg-white shadow-sm">
+    <div className="w-64 bg-card border-r border-white/10">
       <div className="p-6">
-        <div className="flex items-center">
-          <h1 className="text-xl font-bold text-gray-900">AutoPost AI</h1>
+        <div className="flex items-center space-x-2">
+          <div className="w-8 h-8 relative flex-shrink-0">
+            <svg className="w-full h-full" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M2 21L23 12L13 10L11 2L2 21Z" fill="#10B981"/>
+              <path d="M2 21L11 15" stroke="white" strokeWidth="1.5" strokeLinecap="round"/>
+              <circle cx="11" cy="15" r="1.5" fill="white"/>
+              <circle cx="13" cy="10" r="1.5" fill="white"/>
+            </svg>
+          </div>
+          <h1 className="text-xl font-bold text-foreground">AutoPost AI</h1>
         </div>
       </div>
       
@@ -76,11 +84,11 @@ export function DashboardSidebar() {
               onClick={(e) => handleNavigation(e, item.href)}
               className={`group flex items-center px-3 py-2 text-sm font-medium ${
                 isActive(item.href)
-                  ? 'bg-lime-50 border-r-2 border-lime-400 text-lime-700 rounded-l-md'
-                  : 'text-gray-700 hover:text-gray-900 hover:bg-gray-50 rounded-md'
+                  ? 'bg-primary/10 text-primary rounded-md'
+                  : 'text-muted-foreground hover:text-foreground hover:bg-accent/50 rounded-md'
               }`}
             >
-              <span className={isActive(item.href) ? 'text-lime-500' : 'text-gray-400'}>
+              <span className={isActive(item.href) ? 'text-primary' : 'text-muted-foreground'}>
                 {item.icon}
               </span>
               {item.label}

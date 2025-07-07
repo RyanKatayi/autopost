@@ -41,21 +41,21 @@ export default function LoginPage() {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-primary/20 to-yellow-300/20">
-      <div className="max-w-md w-full space-y-8">
-        <Card>
-          <CardHeader className="space-y-1">
-            <CardTitle className="text-2xl text-center font-bold">
+    <div className="min-h-screen flex items-center justify-center bg-background p-4">
+      <div className="max-w-md w-full space-y-6 sm:space-y-8">
+        <Card className="w-full border-white/10 bg-card/50 backdrop-blur-lg">
+          <CardHeader className="space-y-1 p-4 sm:p-6">
+            <CardTitle className="text-xl sm:text-2xl text-center font-bold">
               {isSignUp ? 'Create your account' : 'Sign in to your account'}
             </CardTitle>
-            <p className="text-sm text-muted-foreground text-center">
+            <p className="text-xs sm:text-sm text-muted-foreground text-center">
               AutoPost AI - Social Media Automation
             </p>
           </CardHeader>
-          <CardContent>
-            <form className="space-y-4" onSubmit={handleAuth}>
-              <div className="space-y-2">
-                <Label htmlFor="email">Email address</Label>
+          <CardContent className="p-4 sm:p-6">
+            <form className="space-y-3 sm:space-y-4" onSubmit={handleAuth}>
+              <div className="space-y-1 sm:space-y-2">
+                <Label htmlFor="email" className="text-sm font-medium">Email address</Label>
                 <Input
                   id="email"
                   name="email"
@@ -64,11 +64,12 @@ export default function LoginPage() {
                   placeholder="Enter your email"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
+                  className="h-10 sm:h-11 bg-white/5 border-white/10"
                 />
               </div>
               
-              <div className="space-y-2">
-                <Label htmlFor="password">Password</Label>
+              <div className="space-y-1 sm:space-y-2">
+                <Label htmlFor="password" className="text-sm font-medium">Password</Label>
                 <Input
                   id="password"
                   name="password"
@@ -77,13 +78,14 @@ export default function LoginPage() {
                   placeholder="Enter your password"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
+                  className="h-10 sm:h-11 bg-white/5 border-white/10"
                 />
               </div>
 
               <Button
                 type="submit"
                 disabled={loading}
-                className="w-full"
+                className="w-full h-10 sm:h-11 text-sm sm:text-base"
                 size="lg"
               >
                 {loading ? 'Loading...' : isSignUp ? 'Sign up' : 'Sign in'}
@@ -94,7 +96,7 @@ export default function LoginPage() {
                   type="button"
                   variant="link"
                   onClick={() => setIsSignUp(!isSignUp)}
-                  className="text-sm"
+                  className="text-xs sm:text-sm px-0"
                 >
                   {isSignUp ? 'Already have an account? Sign in' : 'Need an account? Sign up'}
                 </Button>

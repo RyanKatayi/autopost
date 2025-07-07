@@ -442,7 +442,7 @@ function CreatePostContent() {
                 {isEditMode ? 'Edit Post' : 'Create Post'}
               </h2>
               {isEditMode && (
-                <span className="bg-blue-100 text-blue-800 text-xs font-medium px-2.5 py-0.5 rounded">
+                <span className="bg-green-100 text-green-800 text-xs font-medium px-2.5 py-0.5 rounded">
                   Edit Mode
                 </span>
               )}
@@ -561,7 +561,7 @@ function CreatePostContent() {
                                         )}
                                         <span>{account.display_name}</span>
                                         {account.is_primary && (
-                                          <span className="text-xs bg-blue-100 text-blue-700 px-1.5 py-0.5 rounded">
+                                          <span className="text-xs bg-green-100 text-green-700 px-1.5 py-0.5 rounded">
                                             Primary
                                           </span>
                                         )}
@@ -592,7 +592,7 @@ function CreatePostContent() {
                                           <span className="text-sm">{account.display_name}</span>
                                         </div>
                                         {account.is_primary ? (
-                                          <span className="bg-blue-100 text-blue-700 px-2 py-1 rounded text-xs font-medium">
+                                          <span className="bg-green-100 text-green-700 px-2 py-1 rounded text-xs font-medium">
                                             Primary
                                           </span>
                                         ) : (
@@ -626,7 +626,7 @@ function CreatePostContent() {
                               <div className="text-center">
                                 <Link 
                                   href="/dashboard/account" 
-                                  className="text-sm text-blue-600 hover:text-blue-800 underline"
+                                  className="text-sm text-green-600 hover:text-green-800 underline"
                                 >
                                   Go to Account Settings →
                                 </Link>
@@ -711,7 +711,7 @@ function CreatePostContent() {
                                     {image.filename}
                                   </div>
                                   {!image.isReal && (
-                                    <div className="absolute top-2 left-2 bg-blue-500 text-white text-xs px-2 py-1 rounded">
+                                    <div className="absolute top-2 left-2 bg-green-500 text-white text-xs px-2 py-1 rounded">
                                       DEMO
                                     </div>
                                   )}
@@ -830,7 +830,7 @@ function CreatePostContent() {
                             <Button 
                               onClick={handlePublishToLinkedIn}
                               disabled={publishing}
-                              className="bg-blue-600 hover:bg-blue-700"
+                              className="bg-green-600 hover:bg-green-700"
                             >
                               {publishing ? 'Publishing...' : 'Publish to LinkedIn'}
                             </Button>

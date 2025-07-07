@@ -97,7 +97,7 @@ export function LinkedInStatusMulti() {
       <Card className="bg-gray-50">
         <CardContent className="flex items-center justify-between p-4">
           <div className="flex items-center space-x-3">
-            <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-blue-600"></div>
+            <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-green-600"></div>
             <span className="text-sm text-gray-600">Loading LinkedIn accounts...</span>
           </div>
         </CardContent>
@@ -144,8 +144,8 @@ export function LinkedInStatusMulti() {
                     className="w-10 h-10 rounded-full"
                   />
                 ) : (
-                  <div className="w-10 h-10 rounded-full bg-blue-100 flex items-center justify-center">
-                    <svg className="w-6 h-6 text-blue-600" fill="currentColor" viewBox="0 0 20 20">
+                  <div className="w-10 h-10 rounded-full bg-green-100 flex items-center justify-center">
+                    <svg className="w-6 h-6 text-green-600" fill="currentColor" viewBox="0 0 20 20">
                       <path d="M16.5 6v11.5c0 .5-.5 1-1 1h-3v-6.5c0-.5-.5-1-1-1s-1 .5-1 1v6.5h-3c-.5 0-1-.5-1-1V6c0-.5.5-1 1-1h3v1.5c.5-.5 1.5-1.5 3-1.5s2.5 1 2.5 2.5z"/>
                     </svg>
                   </div>

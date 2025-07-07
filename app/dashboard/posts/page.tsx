@@ -53,8 +53,8 @@ const statusConfig = {
   scheduled: {
     label: 'Scheduled',
     icon: Calendar,
-    color: 'bg-blue-50 border-blue-200',
-    badgeColor: 'bg-blue-100 text-blue-700',
+    color: 'bg-green-50 border-green-200',
+    badgeColor: 'bg-green-100 text-green-700',
     count: 0
   },
   published: {
@@ -251,7 +251,7 @@ export default function Posts() {
           {post.hashtags && post.hashtags.length > 0 && (
             <div className="flex flex-wrap gap-1 mb-3">
               {post.hashtags.slice(0, 2).map((tag, index) => (
-                <span key={index} className="text-xs bg-blue-50 text-blue-600 px-1.5 py-0.5 rounded">
+                <span key={index} className="text-xs bg-green-50 text-green-600 px-1.5 py-0.5 rounded">
                   #{tag}
                 </span>
               ))}
@@ -267,7 +267,7 @@ export default function Posts() {
               {formatDate(post.created_at)}
             </div>
             {post.scheduled_at && (
-              <div className="flex items-center gap-1 text-blue-500 mt-1">
+              <div className="flex items-center gap-1 text-green-500 mt-1">
                 <Calendar className="w-3 h-3" />
                 {formatDate(post.scheduled_at)}
               </div>
@@ -398,7 +398,7 @@ export default function Posts() {
                     <h3 className="font-medium mb-2">Hashtags</h3>
                     <div className="flex flex-wrap gap-2">
                       {selectedPost.hashtags.map((tag, index) => (
-                        <span key={index} className="bg-blue-100 text-blue-700 px-2 py-1 rounded text-sm">
+                        <span key={index} className="bg-green-100 text-green-700 px-2 py-1 rounded text-sm">
                           #{tag}
                         </span>
                       ))}
