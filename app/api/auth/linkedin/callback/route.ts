@@ -105,22 +105,43 @@ export async function GET(request: NextRequest) {
     // Calculate token expiration
     const expiresAt = new Date(Date.now() + expires_in * 1000).toISOString();
 
-    // Upsert profile record with LinkedIn information
+    // Save to linkedin_accounts table for multi-account support
     // OpenID Connect returns 'sub' as the unique identifier
-    const { error: updateError } = await supabase
-      .from('profiles')
-      .upsert({
-        id: user.id,
-        linkedin_id: profile.sub || profile.id,
-        linkedin_access_token: access_token,
-        linkedin_expires_at: expiresAt,
-        updated_at: new Date().toISOString(),
-      }, {
-        onConflict: 'id'
+    const linkedinId = profile.sub || profile.id;
+    
+    // Check if this is the user's first LinkedIn account
+    const { data: existingAccounts } = await supabase
+      .from('linkedin_accounts')
+      .select('id')
+      .eq('user_id', user.id)
+      .eq('is_active', true);
+
+    const isFirstAccount = !existingAccounts || existingAccounts.length === 0;
+    
+    // If this is the first account, make it primary
+    // If not, we need to handle primary account logic
+    const accountData = {
+      user_id: user.id,
+      linkedin_id: linkedinId,
+      linkedin_access_token: access_token,
+      linkedin_expires_at: expiresAt,
+      display_name: profile.name || profile.given_name + ' ' + profile.family_name,
+      profile_picture_url: profile.picture,
+      public_profile_url: profile.profile,
+      last_used_at: new Date().toISOString(),
+      updated_at: new Date().toISOString(),
+      is_primary: isFirstAccount, // First account becomes primary
+      is_active: true
+    };
+
+    const { error: insertError } = await supabase
+      .from('linkedin_accounts')
+      .upsert(accountData, {
+        onConflict: 'user_id,linkedin_id'
       });
 
-    if (updateError) {
-      console.error('Database update error:', updateError);
+    if (insertError) {
+      console.error('LinkedIn account save error:', insertError);
       return NextResponse.redirect(
         new URL('/dashboard?error=database_error', request.url)
       );

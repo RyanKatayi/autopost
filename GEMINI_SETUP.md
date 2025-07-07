@@ -1,6 +1,6 @@
 # Google Gemini AI Setup Guide
 
-PostMaster uses Google Gemini AI as the primary AI provider for post generation. Follow these steps to configure it:
+AutoPost AI uses Google Gemini AI as the primary AI provider for post generation. Follow these steps to configure it:
 
 ## 🚀 **Step 1: Get Gemini API Key**
 

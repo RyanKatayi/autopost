@@ -217,7 +217,7 @@ The post should feel authentic, vulnerable when appropriate, and provide real va
     return {
       title: `Demo Post: ${topic}`,
       content: `🚀 Here's a demo LinkedIn post about ${topic}!\n\nThis is what your ${tone} post would look like when generated with Google Gemini AI. The content would be tailored to your ${length} length preference and optimized for engagement.\n\n💡 There was an issue with Gemini generation, so this is demo content.\n\n${includeQuestion ? 'What are your thoughts on this topic?' : 'Ready to automate your LinkedIn content?'}`,
-      hashtags: includeHashtags ? ['LinkedIn', 'AI', 'PostMaster', topic.replace(/\s+/g, '')] : [],
+      hashtags: includeHashtags ? ['LinkedIn', 'AI', 'AutoPost AI', topic.replace(/\s+/g, '')] : [],
       suggestedTime: getSuggestedPostingTime()
     }
   }

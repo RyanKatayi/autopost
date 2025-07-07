@@ -40,7 +40,7 @@ AutoPost AI is a web application that automates LinkedIn content creation and po
 1. Clone the repository
 ```bash
 git clone <repository-url>
-cd postmaster
+cd AutoPost AI
 ```
 
 2. Install dependencies
@@ -87,7 +87,7 @@ Open [http://localhost:3000](http://localhost:3000) to see the application.
 ## Project Structure
 
 ```
-postmaster/
+AutoPost AI/
 ├── app/                    # Next.js App Router
 │   ├── api/               # API routes
 │   ├── dashboard/         # Dashboard pages

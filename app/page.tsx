@@ -1,13 +1,21 @@
 'use client'
 
 import { useSupabase } from '@/contexts/supabase-context'
-import { redirect } from 'next/navigation'
+import { useRouter } from 'next/navigation'
+import { useEffect } from 'react'
 import Link from 'next/link'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 
 export default function Home() {
   const { user, loading } = useSupabase()
+  const router = useRouter()
+
+  useEffect(() => {
+    if (user && !loading) {
+      router.push('/dashboard')
+    }
+  }, [user, loading, router])
 
   if (loading) {
     return (
@@ -18,7 +26,11 @@ export default function Home() {
   }
 
   if (user) {
-    redirect('/dashboard')
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gray-900">
+        <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-lime-400"></div>
+      </div>
+    )
   }
 
   return (
@@ -29,7 +41,7 @@ export default function Home() {
           <div className="flex items-center justify-between h-16">
             <div className="flex items-center">
               <div className="flex-shrink-0">
-                <h1 className="text-white text-xl font-bold">PostMaster</h1>
+                <h1 className="text-white text-xl font-bold">AutoPost AI</h1>
               </div>
             </div>
             <div className="hidden md:block">
@@ -108,7 +120,7 @@ export default function Home() {
                       <div className="w-3 h-3 bg-yellow-500 rounded-full"></div>
                       <div className="w-3 h-3 bg-green-500 rounded-full"></div>
                     </div>
-                    <div className="text-sm text-muted-foreground">PostMaster Dashboard</div>
+                    <div className="text-sm text-muted-foreground">AutoPost AI Dashboard</div>
                   </div>
                 </CardHeader>
                 

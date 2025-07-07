@@ -3,10 +3,12 @@ import { NextResponse } from 'next/server'
 
 export async function GET() {
   try {
+    console.log('Dashboard API called')
     const supabase = await createClient()
     
     // Get current user
     const { data: { user }, error: userError } = await supabase.auth.getUser()
+    console.log('User check:', { user: user?.id, error: userError })
     
     if (userError || !user) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
@@ -17,6 +19,7 @@ export async function GET() {
       .from('posts')
       .select('*')
       .eq('user_id', user.id)
+      .order('created_at', { ascending: false })
 
     if (postsError) {
       console.error('Posts fetch error:', postsError)
@@ -32,53 +35,93 @@ export async function GET() {
       failed: posts?.filter(p => p.status === 'failed').length || 0,
     }
 
-    // Get recent posts analytics
+    // Get recent posts analytics - use left join to get all posts with optional analytics
     const { data: analytics, error: analyticsError } = await supabase
       .from('post_analytics')
       .select(`
         *,
-        posts!inner(title, status)
+        posts!inner(id, title, status, user_id)
       `)
       .eq('posts.user_id', user.id)
       .order('recorded_at', { ascending: false })
       .limit(10)
 
+    // Also get posts without analytics for a complete view
+    const { error: postsAnalyticsError } = await supabase
+      .from('posts')
+      .select(`
+        id,
+        title,
+        status,
+        created_at,
+        post_analytics(*)
+      `)
+      .eq('user_id', user.id)
+      .order('created_at', { ascending: false })
+      .limit(10)
+
+    // Get LinkedIn accounts for platform data
+    const { data: linkedinAccounts, error: linkedinError } = await supabase
+      .from('linkedin_accounts')
+      .select('*')
+      .eq('user_id', user.id)
+      .eq('is_active', true)
+
     if (analyticsError) {
       console.error('Analytics fetch error:', analyticsError)
     }
+    
+    if (postsAnalyticsError) {
+      console.error('Posts analytics fetch error:', postsAnalyticsError)
+    }
+    
+    if (linkedinError) {
+      console.error('LinkedIn accounts fetch error:', linkedinError)
+    }
 
-    // Calculate totals for the dashboard cards
-    const totalImpressions = analytics?.reduce((sum, a) => sum + (a.impressions || 0), 0) || 721000
-    const totalEngagement = analytics?.reduce((sum, a) => sum + (a.likes || 0) + (a.comments || 0) + (a.shares || 0), 0) || 367000
-    const newUsers = (analytics?.length || 0) * 23 || 1156 // Simulated metric
-    const activeUsers = Math.floor(totalImpressions * 0.33) || 239000
+    // Use only real analytics data
+    const displayTotalImpressions = analytics?.reduce((sum, a) => sum + (a.impressions || 0), 0) || 0
+    const displayTotalEngagement = analytics?.reduce((sum, a) => sum + (a.likes || 0) + (a.comments || 0) + (a.shares || 0), 0) || 0
+    const displayTotalClicks = analytics?.reduce((sum, a) => sum + (a.clicks || 0), 0) || 0
+    const displayAvgEngagementRate = analytics && analytics.length > 0 
+      ? (analytics.reduce((sum, a) => sum + (parseFloat(a.engagement_rate) || 0), 0) / analytics.length).toFixed(2)
+      : '0.00'
 
     const dashboardData = {
       stats,
       metrics: {
         todaysPosts: {
-          value: totalImpressions,
-          change: '+11.01%',
+          value: displayTotalImpressions,
+          change: '0%',
           trending: 'up'
         },
         upcomingPosts: {
-          value: totalEngagement,
-          change: '+11.01%',
+          value: displayTotalEngagement,
+          change: '0%',
           trending: 'up'
         },
         newUsers: {
-          value: newUsers,
-          change: '+11.01%',
+          value: displayTotalClicks,
+          change: '0%',
           trending: 'up'
         },
         activeUsers: {
-          value: activeUsers,
-          change: '+11.01%',
+          value: parseFloat(displayAvgEngagementRate),
+          change: '0%',
           trending: 'up'
         }
       },
       recentPosts: posts?.slice(0, 5) || [],
-      analytics: analytics?.slice(0, 5) || []
+      analytics: analytics?.slice(0, 5) || [],
+      linkedinAccounts: linkedinAccounts || [],
+      platformStats: {
+        linkedin: {
+          accounts: linkedinAccounts?.length || 0,
+          posts: posts?.filter(p => p.linkedin_post_id).length || 0,
+          percentage: posts?.length > 0 ? ((posts.filter(p => p.linkedin_post_id).length / posts.length) * 100).toFixed(0) : 0
+        }
+      },
+      hasRealAnalytics: analytics && analytics.length > 0
     }
 
     return NextResponse.json(dashboardData)

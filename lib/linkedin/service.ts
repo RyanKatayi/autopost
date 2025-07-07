@@ -3,30 +3,75 @@ import { createClient } from '@/lib/supabase/server';
 import { Database } from '@/lib/database.types';
 
 type Post = Database['public']['Tables']['posts']['Row'];
+type LinkedInAccount = {
+  id: string;
+  user_id: string;
+  linkedin_id: string;
+  linkedin_access_token: string;
+  display_name: string | null;
+  profile_picture_url: string | null;
+  headline: string | null;
+  is_primary: boolean;
+  is_active: boolean;
+};
 
 export class LinkedInService {
   private client: LinkedInClient;
+  private account: LinkedInAccount;
 
-  constructor(accessToken: string) {
-    this.client = new LinkedInClient(accessToken);
+  constructor(account: LinkedInAccount) {
+    this.client = new LinkedInClient(account.linkedin_access_token);
+    this.account = account;
   }
 
-  static async fromUserId(userId: string): Promise<LinkedInService | null> {
+  static async fromUserId(userId: string, accountId?: string): Promise<LinkedInService | null> {
     const supabase = await createClient();
     
-    const { data: profile, error } = await supabase
-      .from('profiles')
-      .select('linkedin_access_token')
-      .eq('id', userId)
-      .single();
+    let query = supabase
+      .from('linkedin_accounts')
+      .select('*')
+      .eq('user_id', userId)
+      .eq('is_active', true);
+      
+    if (accountId) {
+      query = query.eq('id', accountId);
+    } else {
+      // Get primary account if no specific account requested
+      query = query.eq('is_primary', true);
+    }
+    
+    const { data: account, error } = await query.single();
 
-    console.log('Profile lookup:', { userId, profile, error });
+    console.log('LinkedIn account lookup:', { userId, accountId, account, error });
 
-    if (error || !profile?.linkedin_access_token) {
+    if (error || !account) {
       return null;
     }
 
-    return new LinkedInService(profile.linkedin_access_token);
+    return new LinkedInService(account);
+  }
+
+  static async getAccountsForUser(userId: string): Promise<LinkedInAccount[]> {
+    const supabase = await createClient();
+    
+    const { data: accounts, error } = await supabase
+      .from('linkedin_accounts')
+      .select('*')
+      .eq('user_id', userId)
+      .eq('is_active', true)
+      .order('is_primary', { ascending: false })
+      .order('display_name', { ascending: true });
+
+    if (error) {
+      console.error('Error fetching LinkedIn accounts:', error);
+      return [];
+    }
+
+    return accounts || [];
+  }
+
+  getAccount(): LinkedInAccount {
+    return this.account;
   }
 
   async publishPost(post: Post & { hashtags?: string[] }): Promise<{ success: boolean; linkedinPostId?: string; error?: string }> {
@@ -85,6 +130,7 @@ export class LinkedInService {
         .update({
           status: 'published',
           linkedin_post_id: response.id,
+          linkedin_account_id: this.account.id,
           published_at: new Date().toISOString(),
         })
         .eq('id', post.id);

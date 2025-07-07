@@ -1,9 +1,9 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect, useCallback, Suspense } from 'react'
 import Image from 'next/image'
 import { useSupabase } from '@/contexts/supabase-context'
-import { redirect } from 'next/navigation'
+import { useSearchParams, useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
@@ -13,6 +13,7 @@ import { Textarea } from '@/components/ui/textarea'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { Checkbox } from '@/components/ui/checkbox'
 import { LinkedInStatus } from '@/components/linkedin-status'
+import { DashboardSidebar } from '@/components/dashboard-sidebar'
 
 interface GeneratedPost {
   id: string
@@ -33,8 +34,12 @@ interface UploadedImage {
   previewUrl?: string // For showing the actual image preview
 }
 
-export default function CreatePost() {
+function CreatePostContent() {
   const { user, supabase } = useSupabase()
+  const searchParams = useSearchParams()
+  const router = useRouter()
+  const postId = searchParams.get('postId')
+  
   const [topic, setTopic] = useState('')
   const [tone, setTone] = useState<'professional' | 'casual' | 'thought-leadership' | 'storytelling'>('professional')
   const [length, setLength] = useState<'short' | 'medium' | 'long'>('medium')
@@ -49,10 +54,126 @@ export default function CreatePost() {
   const [uploading, setUploading] = useState(false)
   const [publishing, setPublishing] = useState(false)
   const [savedPostId, setSavedPostId] = useState<string | null>(null)
+  const [isEditMode, setIsEditMode] = useState(false)
+  const [linkedinAccounts, setLinkedinAccounts] = useState<{id: string; display_name: string; is_primary: boolean; profile_picture_url?: string}[]>([])
+  const [selectedAccountId, setSelectedAccountId] = useState<string | null>(null)
+  const [settingPrimary, setSettingPrimary] = useState(false)
 
-  if (!user) {
-    redirect('/login')
+  // Define functions first
+  const fetchLinkedInAccounts = useCallback(async () => {
+    try {
+      const { data: accounts, error } = await supabase
+        .from('linkedin_accounts')
+        .select('*')
+        .eq('user_id', user?.id)
+        .eq('is_active', true)
+        .order('is_primary', { ascending: false })
+
+      if (error) throw error
+
+      setLinkedinAccounts(accounts || [])
+      
+      // Set primary account as default or first account
+      const primaryAccount = accounts?.find(acc => acc.is_primary)
+      const defaultAccount = primaryAccount || accounts?.[0]
+      if (defaultAccount) {
+        setSelectedAccountId(defaultAccount.id)
+      }
+    } catch (error) {
+      console.error('Error fetching LinkedIn accounts:', error)
+    }
+  }, [supabase, user])
+
+  const setPrimaryAccount = async (accountId: string) => {
+    setSettingPrimary(true)
+    try {
+      const response = await fetch('/api/linkedin/set-primary', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ accountId }),
+      })
+
+      if (!response.ok) {
+        throw new Error('Failed to set primary account')
+      }
+
+      // Refresh accounts to show updated primary status
+      await fetchLinkedInAccounts()
+      alert('Primary account updated successfully!')
+    } catch (error) {
+      console.error('Error setting primary account:', error)
+      alert('Failed to set primary account')
+    } finally {
+      setSettingPrimary(false)
+    }
   }
+
+  const loadExistingPost = useCallback(async (id: string) => {
+    try {
+      const { data: post, error } = await supabase
+        .from('posts')
+        .select('*')
+        .eq('id', id)
+        .eq('user_id', user?.id)
+        .single()
+
+      if (error) throw error
+
+      if (post) {
+        setIsEditMode(true)
+        setSavedPostId(post.id)
+        setTopic(post.content) // Use content as topic for regeneration
+        
+        // Set the generated post data
+        setGeneratedPost({
+          id: post.id,
+          title: post.title,
+          content: post.content,
+          hashtags: post.hashtags || [],
+          status: post.status,
+          images: post.images || [],
+          suggestedTime: post.scheduled_at
+        })
+
+        // Load images if any
+        if (post.images && post.images.length > 0) {
+          const images = post.images.map((url: string, index: number) => ({
+            url,
+            filename: `image-${index + 1}.jpg`,
+            size: 0,
+            type: 'image/jpeg',
+            isReal: true
+          }))
+          setUploadedImages(images)
+        }
+      }
+    } catch (error) {
+      console.error('Error loading post:', error)
+      alert('Failed to load post')
+    }
+  }, [supabase, user])
+
+  // Load LinkedIn accounts
+  useEffect(() => {
+    if (user) {
+      fetchLinkedInAccounts()
+    }
+  }, [user, fetchLinkedInAccounts])
+
+  // Load existing post if postId is provided
+  useEffect(() => {
+    if (postId && user) {
+      loadExistingPost(postId)
+    }
+  }, [postId, user, loadExistingPost])
+
+  useEffect(() => {
+    if (!user) {
+      router.push('/login')
+    }
+  }, [user, router])
 
   const handleGenerate = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -167,40 +288,65 @@ export default function CreatePost() {
 
     setSaving(true)
     try {
-      const { error } = await supabase
-        .from('posts')
-        .insert({
-          user_id: user.id,
-          title: generatedPost.title,
-          content: generatedPost.content,
-          images: uploadedImages.map(img => img.url),
-          hashtags: generatedPost.hashtags || [],
-          status: status,
-          scheduled_at: status === 'scheduled' ? generatedPost.suggestedTime : null
-        })
+      if (isEditMode && savedPostId) {
+        // Update existing post
+        const { error } = await supabase
+          .from('posts')
+          .update({
+            title: generatedPost.title,
+            content: generatedPost.content,
+            images: uploadedImages.map(img => img.url),
+            hashtags: generatedPost.hashtags || [],
+            status: status,
+            scheduled_at: status === 'scheduled' ? generatedPost.suggestedTime : null,
+            updated_at: new Date().toISOString()
+          })
+          .eq('id', savedPostId)
 
-      if (error) throw error
+        if (error) throw error
+        alert(`Post updated as ${status} successfully!`)
+      } else {
+        // Create new post
+        const { error } = await supabase
+          .from('posts')
+          .insert({
+            user_id: user.id,
+            title: generatedPost.title,
+            content: generatedPost.content,
+            images: uploadedImages.map(img => img.url),
+            hashtags: generatedPost.hashtags || [],
+            status: status,
+            scheduled_at: status === 'scheduled' ? generatedPost.suggestedTime : null
+          })
 
-      // Get the saved post ID
-      const { data: savedPost } = await supabase
-        .from('posts')
-        .select('id')
-        .eq('user_id', user.id)
-        .order('created_at', { ascending: false })
-        .limit(1)
-        .single()
+        if (error) throw error
 
-      if (savedPost) {
-        setSavedPostId(savedPost.id)
+        // Get the saved post ID
+        const { data: savedPost } = await supabase
+          .from('posts')
+          .select('id')
+          .eq('user_id', user.id)
+          .order('created_at', { ascending: false })
+          .limit(1)
+          .single()
+
+        if (savedPost) {
+          setSavedPostId(savedPost.id)
+        }
+
+        alert(`Post saved as ${status} successfully!`)
       }
-
-      alert(`Post saved as ${status} successfully!`)
       
-      // Reset form
-      setGeneratedPost(null)
-      setTopic('')
-      cleanupImages()
-      setUploadedImages([])
+      // Don't reset form in edit mode, just redirect back
+      if (isEditMode) {
+        router.push('/dashboard/posts')
+      } else {
+        // Reset form for new posts
+        setGeneratedPost(null)
+        setTopic('')
+        cleanupImages()
+        setUploadedImages([])
+      }
     } catch (error) {
       console.error('Save error:', error)
       alert('Failed to save post. Please try again.')
@@ -246,7 +392,10 @@ export default function CreatePost() {
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ postId }),
+        body: JSON.stringify({ 
+          postId,
+          accountId: selectedAccountId 
+        }),
       })
 
       if (!response.ok) {
@@ -270,74 +419,18 @@ export default function CreatePost() {
     }
   }
 
+  if (!user) {
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-lime-400"></div>
+      </div>
+    )
+  }
+
   return (
     <div className="min-h-screen bg-gray-50 flex">
       {/* Sidebar */}
-      <div className="w-64 bg-white shadow-sm">
-        <div className="p-6">
-          <div className="flex items-center">
-            <h1 className="text-xl font-bold text-gray-900">PostMaster</h1>
-          </div>
-        </div>
-        
-        <nav className="mt-6">
-          <div className="px-3">
-            <Link href="/dashboard" className="text-gray-700 hover:text-gray-900 hover:bg-gray-50 group flex items-center px-3 py-2 text-sm font-medium rounded-md">
-              <svg className="text-gray-400 mr-3 h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2H5a2 2 0 00-2-2z" />
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 5a2 2 0 012-2h4a2 2 0 012 2v2H8V5z" />
-              </svg>
-              Dashboard
-            </Link>
-          </div>
-          
-          <div className="px-3 mt-2">
-            <Link href="/dashboard/create" className="bg-lime-50 border-r-2 border-lime-400 text-lime-700 group flex items-center px-3 py-2 text-sm font-medium rounded-l-md">
-              <svg className="text-lime-500 mr-3 h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
-              </svg>
-              Create Post
-            </Link>
-          </div>
-          
-          <div className="px-3 mt-2">
-            <a href="#" className="text-gray-700 hover:text-gray-900 hover:bg-gray-50 group flex items-center px-3 py-2 text-sm font-medium rounded-md">
-              <svg className="text-gray-400 mr-3 h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
-              </svg>
-              Projects
-            </a>
-          </div>
-          
-          <div className="px-3 mt-2">
-            <a href="#" className="text-gray-700 hover:text-gray-900 hover:bg-gray-50 group flex items-center px-3 py-2 text-sm font-medium rounded-md">
-              <svg className="text-gray-400 mr-3 h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
-              </svg>
-              Analytics
-            </a>
-          </div>
-          
-          <div className="px-3 mt-2">
-            <a href="#" className="text-gray-700 hover:text-gray-900 hover:bg-gray-50 group flex items-center px-3 py-2 text-sm font-medium rounded-md">
-              <svg className="text-gray-400 mr-3 h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
-              </svg>
-              User Profile
-            </a>
-          </div>
-          
-          <div className="px-3 mt-2">
-            <Link href="/dashboard/account" className="text-gray-700 hover:text-gray-900 hover:bg-gray-50 group flex items-center px-3 py-2 text-sm font-medium rounded-md">
-              <svg className="text-gray-400 mr-3 h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-              </svg>
-              Account
-            </Link>
-          </div>
-        </nav>
-      </div>
+      <DashboardSidebar />
 
       {/* Main Content */}
       <div className="flex-1 flex flex-col">
@@ -345,7 +438,14 @@ export default function CreatePost() {
         <div className="bg-white shadow-sm border-b border-gray-200">
           <div className="px-6 py-4 flex items-center justify-between">
             <div className="flex items-center space-x-4">
-              <h2 className="text-lg font-semibold text-gray-900">Create Post</h2>
+              <h2 className="text-lg font-semibold text-gray-900">
+                {isEditMode ? 'Edit Post' : 'Create Post'}
+              </h2>
+              {isEditMode && (
+                <span className="bg-blue-100 text-blue-800 text-xs font-medium px-2.5 py-0.5 rounded">
+                  Edit Mode
+                </span>
+              )}
             </div>
             
             <div className="flex items-center space-x-4">
@@ -433,18 +533,108 @@ export default function CreatePost() {
                         />
                       </div>
 
-                      <div className="space-y-2">
-                        <Label className="text-sm font-medium">AI Provider</Label>
-                        <div className="flex items-center space-x-2 p-3 bg-green-50 border border-green-200 rounded-md">
-                          <span className="text-green-700">✨ Google Gemini</span>
-                          <span className="text-xs text-green-600 bg-green-100 px-2 py-1 rounded">Active</span>
+                      <div className="space-y-4">
+                        <div>
+                          <Label className="text-sm font-medium">LinkedIn Account</Label>
+                          <p className="text-xs text-muted-foreground mt-1 mb-3">
+                            Select which account to publish to
+                          </p>
+                          
+                          {linkedinAccounts.length > 0 ? (
+                            <div className="space-y-3">
+                              <Select value={selectedAccountId || ''} onValueChange={setSelectedAccountId}>
+                                <SelectTrigger>
+                                  <SelectValue placeholder="Select LinkedIn account" />
+                                </SelectTrigger>
+                                <SelectContent>
+                                  {linkedinAccounts.map((account) => (
+                                    <SelectItem key={account.id} value={account.id}>
+                                      <div className="flex items-center space-x-2">
+                                        {account.profile_picture_url && (
+                                          <Image 
+                                            src={account.profile_picture_url} 
+                                            alt={account.display_name}
+                                            width={20}
+                                            height={20}
+                                            className="w-5 h-5 rounded-full"
+                                          />
+                                        )}
+                                        <span>{account.display_name}</span>
+                                        {account.is_primary && (
+                                          <span className="text-xs bg-blue-100 text-blue-700 px-1.5 py-0.5 rounded">
+                                            Primary
+                                          </span>
+                                        )}
+                                      </div>
+                                    </SelectItem>
+                                  ))}
+                                </SelectContent>
+                              </Select>
+                              
+                              {linkedinAccounts.length > 1 && (
+                                <div className="p-3 bg-gray-50 rounded-md border">
+                                  <p className="text-xs font-medium text-gray-700 mb-2">
+                                    Manage Primary Account
+                                  </p>
+                                  <div className="space-y-2">
+                                    {linkedinAccounts.map((account) => (
+                                      <div key={account.id} className="flex items-center justify-between">
+                                        <div className="flex items-center space-x-2">
+                                          {account.profile_picture_url && (
+                                            <Image 
+                                              src={account.profile_picture_url} 
+                                              alt={account.display_name}
+                                              width={16}
+                                              height={16}
+                                              className="w-4 h-4 rounded-full"
+                                            />
+                                          )}
+                                          <span className="text-sm">{account.display_name}</span>
+                                        </div>
+                                        {account.is_primary ? (
+                                          <span className="bg-blue-100 text-blue-700 px-2 py-1 rounded text-xs font-medium">
+                                            Primary
+                                          </span>
+                                        ) : (
+                                          <Button 
+                                            size="sm" 
+                                            variant="outline"
+                                            onClick={() => setPrimaryAccount(account.id)}
+                                            disabled={settingPrimary}
+                                            className="text-xs px-2 py-1"
+                                          >
+                                            Set Primary
+                                          </Button>
+                                        )}
+                                      </div>
+                                    ))}
+                                  </div>
+                                </div>
+                              )}
+                            </div>
+                          ) : (
+                            <div className="space-y-3">
+                              <div className="p-4 bg-yellow-50 border border-yellow-200 rounded-md">
+                                <p className="text-sm text-yellow-800 font-medium mb-1">
+                                  No LinkedIn accounts connected
+                                </p>
+                                <p className="text-xs text-yellow-700">
+                                  Connect your LinkedIn account to start publishing posts
+                                </p>
+                              </div>
+                              <LinkedInStatus />
+                              <div className="text-center">
+                                <Link 
+                                  href="/dashboard/account" 
+                                  className="text-sm text-blue-600 hover:text-blue-800 underline"
+                                >
+                                  Go to Account Settings →
+                                </Link>
+                              </div>
+                            </div>
+                          )}
                         </div>
-                        <p className="text-xs text-muted-foreground">
-                          Posts are generated using Google Gemini AI
-                        </p>
                       </div>
-
-                      <LinkedInStatus />
 
                       <div className="space-y-2">
                         <Label htmlFor="images">Images (Optional)</Label>
@@ -683,5 +873,13 @@ export default function CreatePost() {
         </div>
       </div>
     </div>
+  )
+}
+
+export default function CreatePost() {
+  return (
+    <Suspense fallback={<div>Loading...</div>}>
+      <CreatePostContent />
+    </Suspense>
   )
 }

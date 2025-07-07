@@ -1,6 +1,6 @@
 # Supabase Storage Setup Guide
 
-Follow these steps to configure image storage for PostMaster:
+Follow these steps to configure image storage for AutoPost AI:
 
 ## 📋 **Step 1: Access Supabase Dashboard**
 

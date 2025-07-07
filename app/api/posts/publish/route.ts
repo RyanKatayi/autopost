@@ -12,7 +12,7 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    const { postId } = await request.json();
+    const { postId, accountId } = await request.json();
     
     if (!postId) {
       return NextResponse.json({ error: 'Post ID is required' }, { status: 400 });
@@ -35,11 +35,11 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Post is already published' }, { status: 400 });
     }
 
-    // Create LinkedIn service instance
-    const linkedInService = await LinkedInService.fromUserId(user.id);
+    // Create LinkedIn service instance with specific account if provided
+    const linkedInService = await LinkedInService.fromUserId(user.id, accountId);
     
     if (!linkedInService) {
-      return NextResponse.json({ error: 'LinkedIn not connected' }, { status: 400 });
+      return NextResponse.json({ error: 'LinkedIn not connected or account not found' }, { status: 400 });
     }
 
     // Publish the post with hashtags

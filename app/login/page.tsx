@@ -49,7 +49,7 @@ export default function LoginPage() {
               {isSignUp ? 'Create your account' : 'Sign in to your account'}
             </CardTitle>
             <p className="text-sm text-muted-foreground text-center">
-              PostMaster - Social Media Automation
+              AutoPost AI - Social Media Automation
             </p>
           </CardHeader>
           <CardContent>

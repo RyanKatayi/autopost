@@ -1,6 +1,6 @@
-# PostMaster AI Prompts
+# AutoPost AI AI Prompts
 
-This document contains all the AI prompts used in the PostMaster LinkedIn automation tool.
+This document contains all the AI prompts used in the AutoPost AI LinkedIn automation tool.
 
 ## Main System Prompt
 
@@ -192,4 +192,4 @@ Based on the prompts, the system follows these LinkedIn engagement principles:
 
 ---
 
-*This document was generated automatically from the PostMaster codebase. For updates, modify the source files and regenerate this documentation.*
+*This document was generated automatically from the AutoPost AI codebase. For updates, modify the source files and regenerate this documentation.*

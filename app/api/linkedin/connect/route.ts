@@ -1,7 +1,7 @@
-import { NextResponse } from 'next/server';
+import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
 
-export async function GET() {
+export async function GET(request: NextRequest) {
   const supabase = await createClient();
   
   // Check authentication
@@ -19,6 +19,10 @@ export async function GET() {
     return NextResponse.json({ error: 'LinkedIn Redirect URI not configured' }, { status: 500 });
   }
 
+  // Check if this is a request to switch accounts
+  const searchParams = request.nextUrl.searchParams;
+  const forceReauth = searchParams.get('force_reauth') === 'true';
+
   // Generate OAuth URL with proper scopes
   const params = new URLSearchParams({
     response_type: 'code',
@@ -28,11 +32,17 @@ export async function GET() {
     scope: 'openid profile w_member_social', // Scopes for profile access and posting
   });
 
+  // Add prompt parameter to force account selection for account switching
+  if (forceReauth) {
+    params.append('prompt', 'consent');
+  }
+
   const authUrl = `https://www.linkedin.com/oauth/v2/authorization?${params.toString()}`;
 
   console.log('Generated LinkedIn OAuth URL:', authUrl);
   console.log('Client ID:', process.env.LINKEDIN_CLIENT_ID);
   console.log('Redirect URI:', process.env.LINKEDIN_REDIRECT_URI);
+  console.log('Force reauth:', forceReauth);
 
   return NextResponse.json({ authUrl });
 }

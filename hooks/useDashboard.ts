@@ -49,30 +49,47 @@ interface DashboardData {
   metrics: DashboardMetrics
   recentPosts: Post[]
   analytics: Analytics[]
+  linkedinAccounts: any[]
 }
 
 export function useDashboard() {
   const [data, setData] = useState<DashboardData | null>(null)
-  const [loading, setLoading] = useState(true)
+  const [loading, setLoading] = useState(false) // Start with false for background loading
   const [error, setError] = useState<string | null>(null)
+  const [initialLoad, setInitialLoad] = useState(true)
 
   const fetchDashboardData = async () => {
     try {
       setLoading(true)
-      const response = await fetch('/api/dashboard')
+      console.log('Starting dashboard fetch...')
+      
+      const response = await fetch('/api/dashboard', {
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        cache: 'no-cache'
+      })
+      
+      console.log('Dashboard fetch response:', response.status)
       
       if (!response.ok) {
-        throw new Error('Failed to fetch dashboard data')
+        const errorText = await response.text()
+        console.error('Dashboard API error response:', errorText)
+        throw new Error(`Failed to fetch dashboard data: ${response.status}`)
       }
       
       const dashboardData = await response.json()
+      console.log('Dashboard data received:', dashboardData)
       setData(dashboardData)
       setError(null)
+      setInitialLoad(false)
     } catch (err) {
       setError(err instanceof Error ? err.message : 'An error occurred')
       console.error('Dashboard fetch error:', err)
+      setInitialLoad(false)
     } finally {
       setLoading(false)
+      console.log('Dashboard fetch completed')
     }
   }
 
@@ -88,6 +105,7 @@ export function useDashboard() {
     data,
     loading,
     error,
+    initialLoad,
     refetch
   }
 }
