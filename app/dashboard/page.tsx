@@ -112,7 +112,7 @@ export default function Dashboard() {
           </header>
 
           {/* Dashboard Content */}
-          <main className="flex-1 p-4 sm:p-6 lg:p-8 overflow-y-auto">
+          <main className="flex-1 p-4 sm:p-6 lg:p-8 overflow-y-auto pb-20 lg:pb-8">
             <div className="max-w-7xl mx-auto">
               <div className="mb-6 sm:mb-8">
                 <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between space-y-2 sm:space-y-0">
@@ -131,7 +131,7 @@ export default function Dashboard() {
               </div>
 
               {/* Stats Cards */}
-              <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+              <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
                 <StatCard
                   title="Accounts Connected"
                   value={displayData?.linkedinAccounts?.length || 0}
@@ -209,84 +209,85 @@ export default function Dashboard() {
               )}
 
               {/* Content Area */}
-              <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 lg:gap-8">
-            {/* Main Content */}
-            <div className="lg:col-span-2">
-              <Card>
-                <CardHeader className="p-4 sm:p-6">
-                  <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between space-y-2 sm:space-y-0">
-                    <CardTitle className="text-base sm:text-lg font-semibold">Post Activity</CardTitle>
-                    <div className="flex items-center space-x-2">
-                      <Button variant="ghost" size="sm" className="text-xs sm:text-sm">All Time</Button>
-                    </div>
-                  </div>
-                </CardHeader>
-                <CardContent className="p-4 sm:p-6">
-                  <div className="space-y-3 sm:space-y-4">
-                    <div className="grid grid-cols-2 gap-3 sm:gap-4">
-                      <div className="flex items-center justify-between p-3 bg-destructive/10 rounded-lg">
-                        <div>
-                          <div className="text-2xl font-bold text-destructive">{displayData?.stats.failed || 0}</div>
-                          <span className="text-sm text-destructive">Failed</span>
-                        </div>
-                        <div className="text-destructive/50">
-                          <svg className="w-8 h-8" fill="currentColor" viewBox="0 0 20 20">
-                            <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd" />
-                          </svg>
+              <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 lg:gap-12 mt-8">
+                {/* Main Content */}
+                <div className="lg:col-span-2 space-y-4 sm:space-y-6">
+                  {/* Post Activity Section */}
+                  <Card>
+                    <CardHeader className="p-4 sm:p-6">
+                      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between space-y-2 sm:space-y-0">
+                        <CardTitle className="text-xl font-semibold">Post Activity</CardTitle>
+                        <div className="flex items-center space-x-2">
+                          <Button variant="ghost" size="sm" className="text-xs sm:text-sm">All Time</Button>
                         </div>
                       </div>
-                      
-                      <div className="flex items-center justify-between p-3 bg-green-100 rounded-lg">
-                        <div>
-                          <div className="text-2xl font-bold text-green-600">{displayData?.stats.drafts || 0}</div>
-                          <span className="text-sm text-green-600">Drafts</span>
+                    </CardHeader>
+                    <CardContent className="p-4 sm:p-6">
+                      <div className="space-y-3 sm:space-y-4">
+                        <div className="grid grid-cols-2 gap-3 sm:gap-4">
+                          <div className="flex items-center justify-between p-3 bg-destructive/10 rounded-lg">
+                            <div>
+                              <div className="text-2xl font-bold text-destructive">{displayData?.stats.failed || 0}</div>
+                              <span className="text-sm text-destructive">Failed</span>
+                            </div>
+                            <div className="text-destructive/50">
+                              <svg className="w-8 h-8" fill="currentColor" viewBox="0 0 20 20">
+                                <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd" />
+                              </svg>
+                            </div>
+                          </div>
+                          
+                          <div className="flex items-center justify-between p-3 bg-green-100 rounded-lg">
+                            <div>
+                              <div className="text-2xl font-bold text-green-600">{displayData?.stats.drafts || 0}</div>
+                              <span className="text-sm text-green-600">Drafts</span>
+                            </div>
+                            <div className="text-green-600/50">
+                              <svg className="w-8 h-8" fill="currentColor" viewBox="0 0 20 20">
+                                <path d="M17.414 2.586a2 2 0 00-2.828 0L7 10.172V13h2.828l7.586-7.586a2 2 0 000-2.828z" />
+                                <path fillRule="evenodd" d="M2 6a2 2 0 012-2h4a1 1 0 010 2H4v10h10v-4a1 1 0 112 0v4a2 2 0 01-2 2H4a2 2 0 01-2-2V6z" clipRule="evenodd" />
+                              </svg>
+                            </div>
+                          </div>
+                          
+                          <div className="flex items-center justify-between p-3 bg-green-100 rounded-lg">
+                            <div>
+                              <div className="text-2xl font-bold text-green-600">{displayData?.stats.scheduled || 0}</div>
+                              <span className="text-sm text-green-600">Scheduled</span>
+                            </div>
+                            <div className="text-green-600/50">
+                              <svg className="w-8 h-8" fill="currentColor" viewBox="0 0 20 20">
+                                <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z" clipRule="evenodd" />
+                              </svg>
+                            </div>
+                          </div>
+                          
+                          <div className="flex items-center justify-between p-3 bg-green-100 rounded-lg">
+                            <div>
+                              <div className="text-2xl font-bold text-green-600">{displayData?.stats.published || 0}</div>
+                              <span className="text-sm text-green-600">Published</span>
+                            </div>
+                            <div className="text-green-600/50">
+                              <svg className="w-8 h-8" fill="currentColor" viewBox="0 0 20 20">
+                                <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+                              </svg>
+                            </div>
+                          </div>
                         </div>
-                        <div className="text-green-600/50">
-                          <svg className="w-8 h-8" fill="currentColor" viewBox="0 0 20 20">
-                            <path d="M17.414 2.586a2 2 0 00-2.828 0L7 10.172V13h2.828l7.586-7.586a2 2 0 000-2.828z" />
-                            <path fillRule="evenodd" d="M2 6a2 2 0 012-2h4a1 1 0 010 2H4v10h10v-4a1 1 0 112 0v4a2 2 0 01-2 2H4a2 2 0 01-2-2V6z" clipRule="evenodd" />
-                          </svg>
+                        
+                        <div className="pt-4 border-t">
+                          <div className="flex items-center justify-between">
+                            <span className="text-sm text-muted-foreground">Total Posts</span>
+                            <span className="text-lg font-semibold">{displayData?.stats.total || 0}</span>
+                          </div>
                         </div>
                       </div>
-                      
-                      <div className="flex items-center justify-between p-3 bg-green-100 rounded-lg">
-                        <div>
-                          <div className="text-2xl font-bold text-green-600">{displayData?.stats.scheduled || 0}</div>
-                          <span className="text-sm text-green-600">Scheduled</span>
-                        </div>
-                        <div className="text-green-600/50">
-                          <svg className="w-8 h-8" fill="currentColor" viewBox="0 0 20 20">
-                            <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z" clipRule="evenodd" />
-                          </svg>
-                        </div>
-                      </div>
-                      
-                      <div className="flex items-center justify-between p-3 bg-green-100 rounded-lg">
-                        <div>
-                          <div className="text-2xl font-bold text-green-600">{displayData?.stats.published || 0}</div>
-                          <span className="text-sm text-green-600">Published</span>
-                        </div>
-                        <div className="text-green-600/50">
-                          <svg className="w-8 h-8" fill="currentColor" viewBox="0 0 20 20">
-                            <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
-                          </svg>
-                        </div>
-                      </div>
-                    </div>
-                    
-                    <div className="pt-4 border-t">
-                      <div className="flex items-center justify-between">
-                        <span className="text-sm text-muted-foreground">Total Posts</span>
-                        <span className="text-lg font-semibold">{displayData?.stats.total || 0}</span>
-                      </div>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-            </div>
+                    </CardContent>
+                  </Card>
+                </div>
 
-            {/* Sidebar */}
-            <div className="space-y-4 sm:space-y-6">
+                {/* Sidebar */}
+                <div className="lg:col-span-1 space-y-4 sm:space-y-6">
                   <Card className="bg-card border shadow-lg">
                     <CardHeader className="p-4 sm:p-6">
                       <div className="flex items-center space-x-3">

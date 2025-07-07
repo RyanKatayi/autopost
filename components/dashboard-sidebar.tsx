@@ -61,41 +61,80 @@ export function DashboardSidebar() {
   ]
 
   return (
-    <div className="w-64 bg-card border-r border-white/10">
-      <div className="p-6">
-        <div className="flex items-center space-x-2">
-          <div className="w-8 h-8 relative flex-shrink-0">
-            <svg className="w-full h-full" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <path d="M2 21L23 12L13 10L11 2L2 21Z" fill="#10B981"/>
-              <path d="M2 21L11 15" stroke="white" strokeWidth="1.5" strokeLinecap="round"/>
-              <circle cx="11" cy="15" r="1.5" fill="white"/>
-              <circle cx="13" cy="10" r="1.5" fill="white"/>
-            </svg>
+    <>
+      {/* Desktop Sidebar */}
+      <div className="hidden lg:block w-64 bg-card border-r border-white/10">
+        <div className="p-6">
+          <div className="flex items-center space-x-2">
+            <div className="w-8 h-8 relative flex-shrink-0">
+              <svg className="w-full h-full" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M2 21L23 12L13 10L11 2L2 21Z" fill="#10B981"/>
+                <path d="M2 21L11 15" stroke="white" strokeWidth="1.5" strokeLinecap="round"/>
+                <circle cx="11" cy="15" r="1.5" fill="white"/>
+                <circle cx="13" cy="10" r="1.5" fill="white"/>
+              </svg>
+            </div>
+            <h1 className="text-xl font-bold text-foreground">AutoPost AI</h1>
           </div>
-          <h1 className="text-xl font-bold text-foreground">AutoPost AI</h1>
         </div>
+        
+        <nav className="mt-6">
+          {navItems.map((item, index) => (
+            <div key={item.href} className={`px-3 ${index === 0 ? '' : 'mt-2'}`}>
+              <Link 
+                href={item.href}
+                onClick={(e) => handleNavigation(e, item.href)}
+                className={`group flex items-center px-3 py-2 text-sm font-medium ${
+                  isActive(item.href)
+                    ? 'bg-primary/10 text-primary rounded-md'
+                    : 'text-muted-foreground hover:text-foreground hover:bg-accent/50 rounded-md'
+                }`}
+              >
+                <span className={isActive(item.href) ? 'text-primary' : 'text-muted-foreground'}>
+                  {item.icon}
+                </span>
+                {item.label}
+              </Link>
+            </div>
+          ))}
+        </nav>
       </div>
-      
-      <nav className="mt-6">
-        {navItems.map((item, index) => (
-          <div key={item.href} className={`px-3 ${index === 0 ? '' : 'mt-2'}`}>
-            <Link 
+
+      {/* Mobile Bottom Navigation */}
+      <div className="lg:hidden fixed bottom-0 left-0 right-0 bg-card border-t border-white/10 z-50">
+        <nav className="flex justify-around items-center py-2">
+          {navItems.map((item) => (
+            <Link
+              key={item.href}
               href={item.href}
               onClick={(e) => handleNavigation(e, item.href)}
-              className={`group flex items-center px-3 py-2 text-sm font-medium ${
+              className={`flex flex-col items-center px-3 py-2 text-xs font-medium ${
                 isActive(item.href)
-                  ? 'bg-primary/10 text-primary rounded-md'
-                  : 'text-muted-foreground hover:text-foreground hover:bg-accent/50 rounded-md'
+                  ? 'text-primary'
+                  : 'text-muted-foreground hover:text-foreground'
               }`}
             >
-              <span className={isActive(item.href) ? 'text-primary' : 'text-muted-foreground'}>
-                {item.icon}
+              <span className={`${isActive(item.href) ? 'text-primary' : 'text-muted-foreground'}`}>
+                <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  {item.href === '/dashboard' && (
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2H5a2 2 0 00-2-2z M8 5a2 2 0 012-2h4a2 2 0 012 2v2H8V5z" />
+                  )}
+                  {item.href === '/dashboard/create' && (
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+                  )}
+                  {item.href === '/dashboard/posts' && (
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
+                  )}
+                  {item.href === '/dashboard/account' && (
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                  )}
+                </svg>
               </span>
-              {item.label}
+              <span className="mt-1 text-xs">{item.label}</span>
             </Link>
-          </div>
-        ))}
-      </nav>
-    </div>
+          ))}
+        </nav>
+      </div>
+    </>
   )
 }

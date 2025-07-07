@@ -58,7 +58,7 @@ export default function Home() {
                 <h1 className="text-gray-900 text-xl font-bold">AutoPost AI</h1>
               </div>
             </div>
-            <div className="hidden md:block">
+            <div className="hidden sm:block">
               <div className="ml-10 flex items-baseline space-x-8">
                 <a href="#features" className="text-gray-600 hover:text-gray-900 px-3 py-2 text-sm font-medium transition-colors">Features</a>
                 <Link href="/privacy" className="text-gray-600 hover:text-gray-900 px-3 py-2 text-sm font-medium transition-colors">Privacy</Link>
@@ -101,8 +101,8 @@ export default function Home() {
                   Get Started Free
                 </Link>
               </Button>
-              <div className="flex items-center space-x-2 text-gray-500">
-                <input type="email" placeholder="Enter work email" className="px-4 py-3 border border-gray-300 rounded-xl text-base w-64 focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent" />
+              <div className="flex items-center space-x-2 text-gray-500 w-full sm:w-auto">
+                <input type="email" placeholder="Enter work email" className="px-4 py-3 border border-gray-300 rounded-xl text-base w-full sm:w-64 focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent" />
               </div>
             </div>
             <div className="flex flex-col sm:flex-row items-center justify-center space-y-2 sm:space-y-0 sm:space-x-6 text-xs sm:text-sm text-gray-500 px-4">
@@ -183,26 +183,26 @@ export default function Home() {
               </p>
             </Card>
 
-            <Card className="text-center p-8 border-2 hover:border-green-200 transition-colors">
-              <div className="w-16 h-16 bg-green-500 rounded-2xl flex items-center justify-center mx-auto mb-6">
-                <svg className="w-8 h-8 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <Card className="text-center p-6 sm:p-8 border-2 hover:border-green-200 transition-colors">
+              <div className="w-12 h-12 sm:w-16 sm:h-16 bg-green-500 rounded-2xl flex items-center justify-center mx-auto mb-4 sm:mb-6">
+                <svg className="w-6 h-6 sm:w-8 sm:h-8 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
                 </svg>
               </div>
-              <h3 className="text-xl font-semibold text-gray-900 mb-4">Smart Scheduling</h3>
-              <p className="text-gray-600 leading-relaxed">
+              <h3 className="text-lg sm:text-xl font-semibold text-gray-900 mb-3 sm:mb-4">Smart Scheduling</h3>
+              <p className="text-sm sm:text-base text-gray-600 leading-relaxed">
                 Post at optimal times when your audience is most active. Our algorithm analyzes engagement patterns to maximize your reach and impact.
               </p>
             </Card>
 
-            <Card className="text-center p-8 border-2 hover:border-green-200 transition-colors">
-              <div className="w-16 h-16 bg-green-500 rounded-2xl flex items-center justify-center mx-auto mb-6">
-                <svg className="w-8 h-8 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <Card className="text-center p-6 sm:p-8 border-2 hover:border-green-200 transition-colors">
+              <div className="w-12 h-12 sm:w-16 sm:h-16 bg-green-500 rounded-2xl flex items-center justify-center mx-auto mb-4 sm:mb-6">
+                <svg className="w-6 h-6 sm:w-8 sm:h-8 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
                 </svg>
               </div>
-              <h3 className="text-xl font-semibold text-gray-900 mb-4">Performance Analytics</h3>
-              <p className="text-gray-600 leading-relaxed">
+              <h3 className="text-lg sm:text-xl font-semibold text-gray-900 mb-3 sm:mb-4">Performance Analytics</h3>
+              <p className="text-sm sm:text-base text-gray-600 leading-relaxed">
                 Track your growth with detailed analytics. See what content performs best and optimize your strategy with data-driven insights.
               </p>
             </Card>
