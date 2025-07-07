@@ -9,6 +9,53 @@ export type Json =
 export interface Database {
   public: {
     Tables: {
+      profiles: {
+        Row: {
+          id: string
+          username: string | null
+          full_name: string | null
+          avatar_url: string | null
+          website: string | null
+          email: string | null
+          linkedin_id: string | null
+          linkedin_access_token: string | null
+          linkedin_refresh_token: string | null
+          linkedin_expires_at: string | null
+          timezone: string | null
+          created_at: string | null
+          updated_at: string | null
+        }
+        Insert: {
+          id: string
+          username?: string | null
+          full_name?: string | null
+          avatar_url?: string | null
+          website?: string | null
+          email?: string | null
+          linkedin_id?: string | null
+          linkedin_access_token?: string | null
+          linkedin_refresh_token?: string | null
+          linkedin_expires_at?: string | null
+          timezone?: string | null
+          created_at?: string | null
+          updated_at?: string | null
+        }
+        Update: {
+          id?: string
+          username?: string | null
+          full_name?: string | null
+          avatar_url?: string | null
+          website?: string | null
+          email?: string | null
+          linkedin_id?: string | null
+          linkedin_access_token?: string | null
+          linkedin_refresh_token?: string | null
+          linkedin_expires_at?: string | null
+          timezone?: string | null
+          created_at?: string | null
+          updated_at?: string | null
+        }
+      }
       users: {
         Row: {
           id: string
@@ -56,6 +103,8 @@ export interface Database {
           user_id: string
           title: string
           content: string
+          images: string[] | null
+          hashtags: string[] | null
           status: 'draft' | 'scheduled' | 'published' | 'failed'
           scheduled_at: string | null
           published_at: string | null
@@ -69,6 +118,8 @@ export interface Database {
           user_id: string
           title: string
           content: string
+          images?: string[] | null
+          hashtags?: string[] | null
           status?: 'draft' | 'scheduled' | 'published' | 'failed'
           scheduled_at?: string | null
           published_at?: string | null
@@ -82,6 +133,8 @@ export interface Database {
           user_id?: string
           title?: string
           content?: string
+          images?: string[] | null
+          hashtags?: string[] | null
           status?: 'draft' | 'scheduled' | 'published' | 'failed'
           scheduled_at?: string | null
           published_at?: string | null

@@ -12,6 +12,7 @@ import { Label } from '@/components/ui/label'
 import { Textarea } from '@/components/ui/textarea'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { Checkbox } from '@/components/ui/checkbox'
+import { LinkedInStatus } from '@/components/linkedin-status'
 
 interface GeneratedPost {
   id: string
@@ -46,6 +47,8 @@ export default function CreatePost() {
   const [generatedPost, setGeneratedPost] = useState<GeneratedPost | null>(null)
   const [uploadedImages, setUploadedImages] = useState<UploadedImage[]>([])
   const [uploading, setUploading] = useState(false)
+  const [publishing, setPublishing] = useState(false)
+  const [savedPostId, setSavedPostId] = useState<string | null>(null)
 
   if (!user) {
     redirect('/login')
@@ -171,11 +174,25 @@ export default function CreatePost() {
           title: generatedPost.title,
           content: generatedPost.content,
           images: uploadedImages.map(img => img.url),
+          hashtags: generatedPost.hashtags || [],
           status: status,
           scheduled_at: status === 'scheduled' ? generatedPost.suggestedTime : null
         })
 
       if (error) throw error
+
+      // Get the saved post ID
+      const { data: savedPost } = await supabase
+        .from('posts')
+        .select('id')
+        .eq('user_id', user.id)
+        .order('created_at', { ascending: false })
+        .limit(1)
+        .single()
+
+      if (savedPost) {
+        setSavedPostId(savedPost.id)
+      }
 
       alert(`Post saved as ${status} successfully!`)
       
@@ -189,6 +206,67 @@ export default function CreatePost() {
       alert('Failed to save post. Please try again.')
     } finally {
       setSaving(false)
+    }
+  }
+
+  const handlePublishToLinkedIn = async () => {
+    setPublishing(true)
+    try {
+      let postId = savedPostId
+      
+      // If post hasn't been saved yet, save it first
+      if (!postId && generatedPost) {
+        if (!user) {
+          throw new Error('Not authenticated')
+        }
+
+        const { data, error } = await supabase
+          .from('posts')
+          .insert({
+            user_id: user.id,
+            title: generatedPost.title,
+            content: generatedPost.content,
+            images: uploadedImages.map(img => img.url),
+            hashtags: generatedPost.hashtags || [],
+            status: 'draft',
+          })
+          .select()
+          .single()
+
+        if (error) throw error
+        postId = data.id
+      }
+
+      if (!postId) {
+        throw new Error('No post to publish')
+      }
+
+      const response = await fetch('/api/posts/publish', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ postId }),
+      })
+
+      if (!response.ok) {
+        const error = await response.json()
+        throw new Error(error.error || 'Failed to publish')
+      }
+
+      await response.json()
+      alert('Post published to LinkedIn successfully!')
+      
+      // Reset after successful publish
+      setGeneratedPost(null)
+      setSavedPostId(null)
+      setTopic('')
+      cleanupImages()
+      setUploadedImages([])
+    } catch (error) {
+      alert(error instanceof Error ? error.message : 'Failed to publish to LinkedIn')
+    } finally {
+      setPublishing(false)
     }
   }
 
@@ -250,13 +328,13 @@ export default function CreatePost() {
           </div>
           
           <div className="px-3 mt-2">
-            <a href="#" className="text-gray-700 hover:text-gray-900 hover:bg-gray-50 group flex items-center px-3 py-2 text-sm font-medium rounded-md">
+            <Link href="/dashboard/account" className="text-gray-700 hover:text-gray-900 hover:bg-gray-50 group flex items-center px-3 py-2 text-sm font-medium rounded-md">
               <svg className="text-gray-400 mr-3 h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
               </svg>
               Account
-            </a>
+            </Link>
           </div>
         </nav>
       </div>
@@ -366,22 +444,10 @@ export default function CreatePost() {
                         </p>
                       </div>
 
+                      <LinkedInStatus />
+
                       <div className="space-y-2">
                         <Label htmlFor="images">Images (Optional)</Label>
-                        {uploadedImages.length === 0 || uploadedImages.some(img => !img.isReal) ? (
-                          <div className="bg-blue-50 border border-blue-200 rounded-md p-3 mb-4">
-                            <p className="text-sm text-blue-700">
-                              🎯 <strong>Storage Status:</strong> Attempting real uploads first, falling back to demo mode if needed.
-                              See <code>STORAGE_SETUP.md</code> for Supabase configuration.
-                            </p>
-                          </div>
-                        ) : (
-                          <div className="bg-green-50 border border-green-200 rounded-md p-3 mb-4">
-                            <p className="text-sm text-green-700">
-                              ✅ <strong>Real Storage:</strong> Images are being uploaded to Supabase storage!
-                            </p>
-                          </div>
-                        )}
                         <div className="space-y-4">
                           <div className="flex items-center justify-center w-full">
                             <label
@@ -572,14 +638,22 @@ export default function CreatePost() {
                           
                           <div className="flex gap-2 mt-6">
                             <Button 
+                              onClick={handlePublishToLinkedIn}
+                              disabled={publishing}
+                              className="bg-blue-600 hover:bg-blue-700"
+                            >
+                              {publishing ? 'Publishing...' : 'Publish to LinkedIn'}
+                            </Button>
+                            <Button 
                               onClick={() => handleSavePost('scheduled')}
-                              disabled={saving}
+                              disabled={saving || savedPostId !== null}
+                              variant="outline"
                             >
                               {saving ? 'Saving...' : 'Schedule Post'}
                             </Button>
                             <Button 
                               onClick={() => handleSavePost('draft')}
-                              disabled={saving}
+                              disabled={saving || savedPostId !== null}
                               variant="secondary"
                             >
                               {saving ? 'Saving...' : 'Save as Draft'}

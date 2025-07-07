@@ -1,0 +1,41 @@
+
+> postmaster@0.1.0 dev
+> next dev
+
+   ▲ Next.js 15.3.5
+   - Local:        http://localhost:3000
+   - Network:      http://192.168.8.24:3000
+   - Environments: .env.local
+
+ ✓ Starting...
+ ✓ Ready in 1889ms
+ ✓ Compiled /middleware in 176ms (180 modules)
+ ○ Compiling /api/auth/linkedin/callback ...
+ ✓ Compiled /api/auth/linkedin/callback in 620ms (478 modules)
+LinkedIn OAuth callback called
+OAuth params: {
+  code: 'AQSkmW3h6wL0-bjgKW4y...',
+  state: '5f77e177-4a0c-4cdf-b3ec-206998833863',
+  error: null
+}
+User auth check: {
+  userExists: true,
+  authError: null,
+  userState: '5f77e177-4a0c-4cdf-b3ec-206998833863',
+  providedState: '5f77e177-4a0c-4cdf-b3ec-206998833863'
+}
+LinkedIn token error: {"error":"invalid_client","error_description":"Client authentication failed"}
+ GET /api/auth/linkedin/callback?code=AQSkmW3h6wL0-bjgKW4yywNEzZNG7k0OBAjotd-fC6N6hjwF6rerSNCvBSZ2Py2V7QSLtsSP97RsuWxAWAqldhiJRTPzSEywYNOzhn4VlDaeqxE2baaP3Udw8G7jnTTeI8QfskzaDakFfDIEtzOH_xeyQbFMF0PQ8E4PjHjfXhsy6ORTBKBocVY7oTjOJUsm7WFwYxpnEc5yJQPzB_k&state=5f77e177-4a0c-4cdf-b3ec-206998833863 307 in 2064ms
+ ○ Compiling /dashboard ...
+ ✓ Compiled /dashboard in 568ms (1067 modules)
+ GET /dashboard?error=token_exchange_failed 307 in 773ms
+ ✓ Compiled /login in 215ms (1082 modules)
+ GET /login 200 in 356ms
+ ✓ Compiled /_not-found in 337ms (1086 modules)
+ GET /.well-known/appspecific/com.chrome.devtools.json 404 in 477ms
+ GET /dashboard 200 in 19ms
+ GET /dashboard 200 in 7ms
+ ✓ Compiled /api/dashboard in 121ms (1088 modules)
+ GET /api/dashboard 200 in 1361ms
+ GET /api/dashboard 200 in 1069ms
+ GET /dashboard 307 in 171ms
