@@ -5,6 +5,7 @@ import { Button } from '@/components/ui/button'
 import Image from 'next/image'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
+import { toast } from '@/components/ui/toast'
 
 type LinkedInAccount = {
   id: string
@@ -51,7 +52,7 @@ export function LinkedInStatusMulti() {
         throw new Error('Failed to get auth URL')
       }
     } catch {
-      alert('Failed to connect to LinkedIn. Please try again.')
+      toast.error('Failed to connect to LinkedIn. Please try again.')
       setConnecting(false)
     }
   }
@@ -68,7 +69,7 @@ export function LinkedInStatusMulti() {
       }
     } catch (error) {
       console.error('Failed to set primary account:', error)
-      alert('Failed to set primary account. Please try again.')
+      toast.error('Failed to set primary account. Please try again.')
     }
   }
 
@@ -88,7 +89,7 @@ export function LinkedInStatusMulti() {
       }
     } catch (error) {
       console.error('Failed to remove account:', error)
-      alert('Failed to remove account. Please try again.')
+      toast.error('Failed to remove account. Please try again.')
     }
   }
 

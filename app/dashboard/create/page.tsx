@@ -14,6 +14,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Checkbox } from '@/components/ui/checkbox'
 import { LinkedInStatus } from '@/components/linkedin-status'
 import { DashboardSidebar } from '@/components/dashboard-sidebar'
+import { toast } from '@/components/ui/toast'
 
 interface GeneratedPost {
   id: string
@@ -101,10 +102,10 @@ function CreatePostContent() {
 
       // Refresh accounts to show updated primary status
       await fetchLinkedInAccounts()
-      alert('Primary account updated successfully!')
+      toast.success('Primary account updated successfully!')
     } catch (error) {
       console.error('Error setting primary account:', error)
-      alert('Failed to set primary account')
+      toast.error('Failed to set primary account')
     } finally {
       setSettingPrimary(false)
     }
@@ -151,7 +152,7 @@ function CreatePostContent() {
       }
     } catch (error) {
       console.error('Error loading post:', error)
-      alert('Failed to load post')
+      toast.error('Failed to load post')
     }
   }, [supabase, user])
 
@@ -203,7 +204,7 @@ function CreatePostContent() {
       const post = await response.json()
       setGeneratedPost(post)
     } catch (error) {
-      alert('Failed to generate post. Please try again.')
+      toast.error('Failed to generate post. Please try again.')
       console.error('Error:', error)
     } finally {
       setLoading(false)
@@ -257,7 +258,7 @@ function CreatePostContent() {
       event.target.value = ''
     } catch (error) {
       console.error('Upload error:', error)
-      alert(error instanceof Error ? error.message : 'Failed to upload image')
+      toast.error(error instanceof Error ? error.message : 'Failed to upload image')
     } finally {
       setUploading(false)
     }
@@ -304,7 +305,7 @@ function CreatePostContent() {
           .eq('id', savedPostId)
 
         if (error) throw error
-        alert(`Post updated as ${status} successfully!`)
+        toast.success(`Post updated as ${status} successfully!`)
       } else {
         // Create new post
         const { error } = await supabase
@@ -334,7 +335,7 @@ function CreatePostContent() {
           setSavedPostId(savedPost.id)
         }
 
-        alert(`Post saved as ${status} successfully!`)
+        toast.success(`Post saved as ${status} successfully!`)
       }
       
       // Don't reset form in edit mode, just redirect back
@@ -349,7 +350,7 @@ function CreatePostContent() {
       }
     } catch (error) {
       console.error('Save error:', error)
-      alert('Failed to save post. Please try again.')
+      toast.error('Failed to save post. Please try again.')
     } finally {
       setSaving(false)
     }
@@ -404,7 +405,7 @@ function CreatePostContent() {
       }
 
       await response.json()
-      alert('Post published to LinkedIn successfully!')
+      toast.success('Post published to LinkedIn successfully!')
       
       // Reset after successful publish
       setGeneratedPost(null)
@@ -413,7 +414,7 @@ function CreatePostContent() {
       cleanupImages()
       setUploadedImages([])
     } catch (error) {
-      alert(error instanceof Error ? error.message : 'Failed to publish to LinkedIn')
+      toast.error(error instanceof Error ? error.message : 'Failed to publish to LinkedIn')
     } finally {
       setPublishing(false)
     }

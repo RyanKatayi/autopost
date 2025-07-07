@@ -42,8 +42,8 @@ async function generateWithGemini(
     
     return {
       title: generatedPost.title,
-      content: generatedPost.content,
-      hashtags: includeHashtags ? (generatedPost.hashtags || []) : []
+      content: generatedPost.content.replace(/\*\*(.*?)\*\*/g, '$1'),
+      hashtags: includeHashtags ? (generatedPost.hashtags || []).map((tag: string) => tag.replace(/^#+/, '')) : []
     }
   } catch (error) {
     console.error('Gemini generation error:', error)

@@ -27,6 +27,7 @@ import {
   Copy
 } from 'lucide-react'
 import { DashboardSidebar } from '@/components/dashboard-sidebar'
+import { toast } from '@/components/ui/toast'
 
 interface Post {
   id: string
@@ -117,7 +118,7 @@ export default function Posts() {
       if (error) throw error
       setPosts(posts.filter(p => p.id !== postId))
     } catch {
-      alert('Failed to delete post')
+      toast.error('Failed to delete post')
     }
   }
 
@@ -137,7 +138,7 @@ export default function Posts() {
       if (error) throw error
       fetchPosts()
     } catch {
-      alert('Failed to duplicate post')
+      toast.error('Failed to duplicate post')
     }
   }
 
@@ -151,7 +152,7 @@ export default function Posts() {
       if (error) throw error
       fetchPosts()
     } catch {
-      alert('Failed to update post status')
+      toast.error('Failed to update post status')
     }
   }
 
