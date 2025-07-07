@@ -72,7 +72,9 @@ export function useToast() {
   useEffect(() => {
     const listener = () => forceUpdate({})
     listeners.add(listener)
-    return () => listeners.delete(listener)
+    return () => {
+      listeners.delete(listener)
+    }
   }, [])
 
   return {
